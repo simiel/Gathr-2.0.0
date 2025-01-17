@@ -1,4 +1,4 @@
-import { StyleSheet, Image, Platform, Text } from "react-native";
+import { StyleSheet, Image, Platform, Text, Button } from "react-native";
 
 import { Collapsible } from "@/components/Collapsible";
 import { ExternalLink } from "@/components/ExternalLink";
@@ -6,6 +6,7 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
+import * as Sentry from "@sentry/react-native";
 
 export default function TabTwoScreen() {
   return (
@@ -22,6 +23,12 @@ export default function TabTwoScreen() {
     >
       <ThemedView style={styles.titleContainer}>
         <Text className="text-green-500">Explore</Text>
+        <Button
+          title="Try!"
+          onPress={() => {
+            Sentry.captureException(new Error("First error"));
+          }}
+        />
       </ThemedView>
       <ThemedText>
         This app includes example code to help you get started.
