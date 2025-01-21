@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Dimensions, Text } from "react-native";
+import { View, StyleSheet, Dimensions } from "react-native";
 import LottieView from "lottie-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -20,19 +20,19 @@ export default function CustomSplash({
   }, []);
 
   const checkFirstLaunch = async () => {
-    // try {
-    //   const hasLaunched = await AsyncStorage.getItem("hasLaunched");
-    //   if (hasLaunched === null) {
-    //     await AsyncStorage.setItem("hasLaunched", "true");
-    //     setIsFirstLaunch(true);
-    //   } else {
-    //     setIsFirstLaunch(false);
-    //     onAnimationComplete();
-    //   }
-    // } catch (error) {
-    //   console.error("Error checking first launch:", error);
-    //   onAnimationComplete();
-    // }
+    try {
+      const hasLaunched = await AsyncStorage.getItem("hasLaunched");
+      if (hasLaunched === null) {
+        // await AsyncStorage.setItem('hasLaunched', 'true');
+        setIsFirstLaunch(true);
+      } else {
+        setIsFirstLaunch(true);
+        onAnimationComplete();
+      }
+    } catch (error) {
+      console.error("Error checking first launch:", error);
+      onAnimationComplete();
+    }
   };
 
   if (!isFirstLaunch) {
@@ -40,11 +40,7 @@ export default function CustomSplash({
   }
 
   return (
-    <View
-      className={
-        "absolute w-full h-full bg-green-400 items-center justify-center -z-50"
-      }
-    >
+    <View style={styles.container}>
       <LottieView
         ref={animation}
         source={require("@/assets/animation/logo.json")}
@@ -53,15 +49,22 @@ export default function CustomSplash({
         style={styles.animation}
         onAnimationFinish={onAnimationComplete}
       />
-      <Text>Let you in</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    width,
+    height,
+    backgroundColor: "#000000",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 999,
+  },
   animation: {
     width: width * 0.7,
     height: width * 0.7,
-    backgroundColor: "red",
   },
 });
