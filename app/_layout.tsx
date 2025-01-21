@@ -12,10 +12,10 @@ import "react-native-reanimated";
 import "./global.css";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import * as Sentry from '@sentry/react-native';
+import * as Sentry from "@sentry/react-native";
 
 Sentry.init({
-  dsn: 'https://af61dc9a083b6664834f0b848d905fba@o4508658587926528.ingest.de.sentry.io/4508658596511824',
+  dsn: "https://af61dc9a083b6664834f0b848d905fba@o4508658587926528.ingest.de.sentry.io/4508658596511824",
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // spotlight: __DEV__,
