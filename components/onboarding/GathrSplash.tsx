@@ -23,7 +23,7 @@ export default function CustomSplash({
     try {
       const hasLaunched = await AsyncStorage.getItem("hasLaunched");
       if (hasLaunched === null) {
-        // await AsyncStorage.setItem('hasLaunched', 'true');
+        await AsyncStorage.setItem("hasLaunched", "true");
         setIsFirstLaunch(true);
       } else {
         setIsFirstLaunch(true);

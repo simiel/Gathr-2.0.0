@@ -8,6 +8,11 @@
     "scheme": "gathr",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
     "ios": {
       "supportsTablet": true
     },
@@ -24,15 +29,7 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/splash/splash.png",
-          "imageWidth": 100,
-          "resizeMode": "contain",
-          "backgroundColor": "#000000"
-        }
-      ],
+      ["expo-splash-screen"],
       [
         "@sentry/react-native/expo",
         {
