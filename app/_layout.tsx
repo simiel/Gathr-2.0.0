@@ -25,11 +25,14 @@ export default function RootLayout() {
 
   const checkFirstLaunch = async () => {
     try {
-      const hasLaunched = await AsyncStorage.getItem("hasLaunched2");
+      const hasLaunched = await AsyncStorage.getItem("hasLaunched");
       if (hasLaunched === null) {
-        router.replace("/(tabs)");
+        router.replace("/(onboarding)/onboarding");
         console.log("first launch");
         await AsyncStorage.setItem("hasLaunched", "true");
+      } else {
+        router.replace("/(auth)");
+        console.log("not first launch");
       }
     } catch (error) {
       console.error("Error checking first launch:", error);
