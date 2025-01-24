@@ -54,24 +54,24 @@ const OTPScreen = () => {
       className="flex-1"
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <SafeAreaView className="flex-1 ">
+      <SafeAreaView className="flex-1">
         {/* Container */}
         <View className="flex-1 ">
           <View className="flex-1 justify-end">
             <TouchableOpacity
-              className="absolute top-0 left-0"
+              className="absolute top-0 left-[20px] p-3 bg-[#ECECED] rounded-full"
               onPress={() => {
                 router.back();
               }}
             >
-              <ArrowLeft2 size="44" color="#141B34" />
+              <ArrowLeft2 size="24" color="#141B34" />
             </TouchableOpacity>
             {/* Title */}
             <View className="gap-2">
               <Text className="text-[24px] font-[Lato-Heavy] text-center">
                 Verify Your Gathr Account
               </Text>
-              <Text className="text-[16px] font-[Lato-Thin] text-black text-center">
+              <Text className="text-[16px] font-[Lato-Regular] text-black text-center">
                 We have sent you an OTP. Please check your email {`\n`} to
                 complete this process.
               </Text>
