@@ -40,7 +40,7 @@ const OTPScreen = () => {
 
   const verifyCode = () => {
     console.log("code", code);
-    // router.navigate("/(user-setup)");
+    router.navigate("/(user-setup)");
   };
 
   useEffect(() => {

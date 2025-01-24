@@ -4,11 +4,11 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import "./global.css";
-
 import * as Sentry from "@sentry/react-native";
 import { useAppBootstrap } from "@/hooks/useAppBootstrap";
 import { AppAssets } from "@/constants/AppAssets";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -50,5 +50,12 @@ export default function RootLayout() {
     return null;
   }
 
-  return <Slot />;
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <StatusBar style="dark" />
+        <Slot />
+      </Stack>
+    </GestureHandlerRootView>
+  );
 }
