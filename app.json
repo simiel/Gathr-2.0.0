@@ -8,19 +8,20 @@
     "scheme": "gathr",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/logo/logo-light.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#000000"
-    },
+
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon/adaptive-icon.png",
-        "backgroundColor": "#000000"
+        "backgroundColor": "#0000ee"
       }
+    },
+    "splash": {
+      "image": "./assets/splash/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0000ee"
     },
     "web": {
       "bundler": "metro",
