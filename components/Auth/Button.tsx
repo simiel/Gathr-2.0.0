@@ -1,11 +1,12 @@
 import React, { RefObject } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { FlatList, Pressable, Text, View } from "react-native";
 import Animated, {
   SharedValue,
   useAnimatedStyle,
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { useRouter } from "expo-router";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -20,6 +21,7 @@ export default function SlideControlButton({
   flatListIndex,
   flatListRef,
 }: ButtonProps) {
+  const router = useRouter();
   const buttonAnimationStyle = useAnimatedStyle(() => {
     const isLastScreen = flatListIndex.value === dataLength - 1;
     return {
@@ -79,9 +81,7 @@ export default function SlideControlButton({
     const isSecondLastScreen = flatListIndex.value === dataLength - 2;
 
     if (isLastScreen) {
-      console.log("Navigating to the next screen...");
-      //   router.navigate("/(Signup)/UserAuth/PhoneInput/page");
-      // navigate using router
+      router.replace("/(onboarding)/get-started");
     } else if (isSecondLastScreen) {
       handleNextScreen(); // Move to the next slide
     } else {
@@ -97,7 +97,7 @@ export default function SlideControlButton({
       {/* Skip Button */}
       <Pressable
         onPress={() => {
-          //   router.navigate("/UserAuth/GettingStarted/page");
+          router.replace("/(onboarding)/get-started");
         }}
         className="h-14 w-24 justify-center items-center bg-white border-[1px] border-black rounded-[30px]"
       >

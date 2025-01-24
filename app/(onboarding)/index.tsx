@@ -137,9 +137,6 @@ const Onboarding = () => {
             flatListRef={flatListRef}
             flatListIndex={flatListIndex}
             dataLength={OnboardingData?.length}
-            // navigateToHome={() => {
-            //   // navigation.navigate("AuthNavigation");
-            // }}
           />
         </View>
       </View>
