@@ -25,9 +25,9 @@ export default function RootLayout() {
 
   const checkFirstLaunch = async () => {
     try {
-      const hasLaunched = await AsyncStorage.getItem("hasLaunchedjrkl");
+      const hasLaunched = await AsyncStorage.getItem("hasLaunched");
       if (hasLaunched === null) {
-        router.replace("/(auth)/otp");
+        router.replace("/(onboarding)/splash");
         console.log("first launch");
         await AsyncStorage.setItem("hasLaunched", "true");
       } else {
