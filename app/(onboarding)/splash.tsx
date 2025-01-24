@@ -8,8 +8,8 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 
-const Frame = require("@/assets/logo/logo-light.png");
-// const tag = require("@/assets/logo/logo-light.png");
+const Frame = require("@/assets/blocks/splash-logo.png");
+const Tag = require("@/assets/blocks/splash-text.png");
 
 const { height } = Dimensions.get("window");
 
@@ -53,15 +53,21 @@ const splash = () => {
   return (
     <View className="flex-1 items-center justify-center bg-black w-full">
       <Animated.View style={[animatedStyles]} className="rounded-[20px]">
-        <Image source={Frame} className="w-[150px] h-[150px] object-contain" />
+        <Image
+          source={Frame}
+          className="w-[120px]"
+          style={{ objectFit: "contain" }}
+        />
       </Animated.View>
       <Animated.View
         className="w-full items-center justify-end absolute bottom-5"
         style={[tagAnimatedStyle]}
       >
-        <Text className="text-xl text-white font-bold">
-          Change our World ...
-        </Text>
+        <Image
+          source={Tag}
+          className="w-[137px] h-6"
+          style={{ objectFit: "contain" }}
+        />
       </Animated.View>
     </View>
   );

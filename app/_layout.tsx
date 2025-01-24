@@ -25,7 +25,7 @@ export default function RootLayout() {
 
   const checkFirstLaunch = async () => {
     try {
-      const hasLaunched = await AsyncStorage.getItem("hasLaunched");
+      const hasLaunched = await AsyncStorage.getItem("hasLaunchedjrkl");
       if (hasLaunched === null) {
         router.replace("/(onboarding)/splash");
         console.log("first launch");

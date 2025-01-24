@@ -71,11 +71,18 @@ const GettingStarted = () => {
         {/* Banner Logo */}
         <View className="flex-1 justify-end items-center">
           <View className="py-10">
-            <Image
-              source={require("@/assets/logo/logo-light.png")}
-              className="h-[82px]"
-              resizeMode="contain"
-            />
+            <View className="items-center gap-2">
+              <Image
+                source={require("@/assets/blocks/get-started-logo.png")}
+                className="h-[50px]"
+                resizeMode="contain"
+              />
+              <Image
+                source={require("@/assets/blocks/get-started-text.png")}
+                className="h-[24px]"
+                resizeMode="contain"
+              />
+            </View>
           </View>
         </View>
 
@@ -83,7 +90,10 @@ const GettingStarted = () => {
         <View className="flex-1 pb-10 px-8 justify-end">
           <View className="">
             <View className="">
-              <Text className="text-center text-sm text-gray-300 mb-4 justify-center align-middle text-[14px]">
+              <Text
+                className="text-center text-sm text-gray-300 mb-4 justify-center align-middle text-[14px]"
+                style={{ fontFamily: "Lato-Heavy" }}
+              >
                 By tapping on <Text className="font-bold">“Get Started”</Text>,
                 you agree to our{" "}
                 <Text
@@ -114,16 +124,18 @@ const GettingStarted = () => {
                 }}
                 className="bg-white py-4 rounded-full "
               >
-                <Text className="text-center text-black font-semibold text-lg">
+                <Text className="text-center text-black font-[Lato-Heavy] text-lg">
                   Get Started
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity className="py-4 rounded-full">
+
+              {/* Guest Feature Button */}
+              {/* <TouchableOpacity className="py-4 rounded-full">
                 <Text className="text-center text-white font-semibold text-lg">
                   {" "}
                   Continue as a guest
                 </Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           </View>
         </View>
