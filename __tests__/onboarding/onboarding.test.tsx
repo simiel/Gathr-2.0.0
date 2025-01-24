@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react-native";
-import Onboarding from "../../app/(onboarding)/onboarding";
+import Onboarding from "../../app/(onboarding)";
 
 describe("Onboarding Screen", () => {
   it("renders correctly", () => {
