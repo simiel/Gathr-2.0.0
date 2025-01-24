@@ -95,7 +95,8 @@ const GettingStarted = () => {
                 style={{ fontFamily: "Lato-Heavy" }}
               >
                 By tapping on <Text className="font-bold">“Get Started”</Text>,
-                you agree to our{" "}
+                you agree to our
+                <Text>{` \n`}</Text>
                 <Text
                   onPress={() => {
                     openPolicy();
