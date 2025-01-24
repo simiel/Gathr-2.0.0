@@ -101,7 +101,9 @@ export default function SlideControlButton({
         }}
         className="h-14 w-24 justify-center items-center bg-white border-[1px] border-black rounded-[30px]"
       >
-        <Text className="text-black text-[16px] font-semibold">Skip</Text>
+        <Text className="text-black text-[16px] font-[Lato-Semibold]">
+          Skip
+        </Text>
       </Pressable>
       <AnimatedPressable
         onPress={handleNextScreen}
@@ -116,7 +118,7 @@ export default function SlideControlButton({
         >
           <Animated.Text
             style={[textAnimationStyle]}
-            className={"text-white text-[16px] font-bold absolute"}
+            className={"text-white text-[16px] font-[Lato-Semibold] absolute"}
           >
             Get Started
           </Animated.Text>
@@ -124,14 +126,16 @@ export default function SlideControlButton({
 
         <Animated.View
           style={[arrowAnimationStyle]}
-          className={"text-white text-[16px] font-bold absolute"}
+          className={"text-white text-[16px] absolute"}
         >
           <Pressable
             onPress={handlePress}
             className="justify-center items-center"
           >
             <Animated.Text
-              className={"text-white text-[16px] font-bold absolute"}
+              className={
+                "text-white text-[16px] font-[Lato-Semibold] font-bold absolute"
+              }
             >
               Let's go
             </Animated.Text>
@@ -146,7 +150,9 @@ export default function SlideControlButton({
             className="justify-center items-center"
           >
             <Animated.Text
-              className={"text-white text-[16px] font-bold absolute"}
+              className={
+                "text-white text-[16px] font-[Lato-Semibold] font-bold absolute"
+              }
             >
               Keep Going
             </Animated.Text>

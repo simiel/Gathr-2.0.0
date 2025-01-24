@@ -79,8 +79,12 @@ const RenderItem = ({
       />
 
       <Animated.View style={textAnimatedStyle}>
-        <Text style={styles.itemTitle}>{item?.title}</Text>
-        <Text style={styles.itemText}>{item?.text}</Text>
+        <Text className="text-black font-[Lato-Bold] text-center mb-[10px] text-[22px]">
+          {item?.title}
+        </Text>
+        <Text className="text-black font-[Lato-Regular] text-center mx-[30px] text-[16px]">
+          {item?.text}
+        </Text>
       </Animated.View>
     </View>
   );
@@ -156,19 +160,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
   },
-  itemTitle: {
-    color: "#32324d",
-    fontSize: 22,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  itemText: {
-    color: "#8e8ea9",
-    textAlign: "center",
-    lineHeight: 20,
-    marginHorizontal: 30,
-  },
+
   footerContainer: {
     flexDirection: "row",
     alignItems: "center",
