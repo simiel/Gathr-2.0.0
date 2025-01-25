@@ -1,37 +1,47 @@
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useRef, useCallback, useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
-  BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { User } from "iconsax-react-native";
 import LottieView from "lottie-react-native";
-import Intro from "@/components/preferences";
-import Faith from "@/components/preferences/Faith";
-import Industry from "@/components/preferences/Industry";
-import Community from "@/components/preferences/Community";
-import Education from "@/components/preferences/education";
+import { useOnboardingForm } from "@/hooks/useOnboardingForm";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Animated, {
+  FadeInRight,
+  FadeOutLeft,
+  SlideInRight,
+  SlideOutLeft,
+} from "react-native-reanimated";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-interface user {
-  firstName: string;
-  lastName: string;
-  username: string;
-  profileImage: string;
-}
+// Import step components
 
 const WelcomeScreen = () => {
-  // ref
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  const {
+    currentStep,
+    steps,
+    formData,
+    errors,
+    nextStep,
+    prevStep,
+    updateFormData,
+    skipOnboarding,
+    isFirstStep,
+    isLastStep,
+  } = useOnboardingForm();
+
+  const params = useLocalSearchParams<{
+    firstName: string;
+    lastName: string;
+    username: string;
+    profileImage: string;
+  }>();
 
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -44,234 +54,140 @@ const WelcomeScreen = () => {
     []
   );
 
-  const params = useLocalSearchParams<{
-    firstName: string;
-    lastName: string;
-    username: string;
-    profileImage: string;
-  }>();
+  const handleStartOnboarding = () => {
+    setShowOnboarding(true);
+    bottomSheetRef.current?.expand();
+  };
 
-  const { username, firstName, lastName, profileImage } = useLocalSearchParams<{
-    username: string;
-    firstName: string;
-    lastName: string;
-    profileImage: string;
-  }>();
-  if (!profileImage || profileImage === undefined) {
-    console.log("all params!", username);
-  }
+  // Render step content based on current step
+  const renderStepContent = () => {
+    const step = steps[currentStep];
 
-  const [currentPage, setCurrentPage] = useState(0);
+    return (
+      <Animated.View
+        entering={FadeInRight}
+        exiting={FadeOutLeft}
+        className="flex-1"
+      >
+        <View className="h-40 w-full items-center justify-center">
+          <LottieView
+            source={require(`@/assets/animations/${step.animation}`)}
+            autoPlay
+            loop
+            className="w-full h-full"
+          />
+        </View>
 
-  // Define the content for each page
-  const pages = [
-    {
-      content: <Intro onNext={() => setCurrentPage(1)} />,
-    },
-    {
-      content: (
-        <Education
-        //   navigateForward={() => setCurrentPage(2)}
-        //   navigateBack={() => setCurrentPage(0)}
-        />
-      ),
-    },
-    {
-      content: (
-        <Faith
-        //   navigateBack={() => setCurrentPage(1)}
-        //   navigateForward={() => setCurrentPage(3)}
-        />
-      ),
-    },
-    {
-      content: (
-        <Industry
-        //   navigateBack={() => {
-        //     setCurrentPage(2);
-        //   }}
-        //   navigateForward={() => {
-        //     setCurrentPage(4);
-        //   }}
-        />
-      ),
-    },
-    {
-      content: (
-        <Community
-        //   navigateBack={() => {
-        //     setCurrentPage(3);
-        //   }}
-        //   navigateForward={() => {
-        //     bottomSheetRef.current?.close();
-        //     router.navigate("/(main)");
-        //   }}
-        />
-      ),
-    },
-  ];
+        <Text className="text-2xl font-bold text-center mt-4 mb-2">
+          {step.title}
+        </Text>
 
-  return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: "white", padding: 32 }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      {/* Profile Picture */}
+        <Text className="text-gray-600 text-center mb-6">
+          {step.description}
+        </Text>
 
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <LottieView
-          autoPlay
-          source={require("@/assets/animation/confetti.json")}
-        //   ref={animation}
-          style={{
-            width: 500,
-            height: 500,
-            alignItems: "center",
-            justifyContent: "center",
-            position: "absolute",
-          }}
-        ></LottieView>
+        {step.id === "intro" && (
+          <Intro onNext={nextStep} onSkip={skipOnboarding} />
+        )}
 
-        {!profileImage || profileImage === undefined ? (
-          <View
-            style={{
-              width: 160,
-              height: 160,
-              borderRadius: 200,
-              marginBottom: 32,
-              backgroundColor: "#F5F5F5",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <User size={50} variant="Bold" color="#0D0D0E" />
-          </View>
-        ) : (
-          <Image
-            source={{ uri: profileImage }}
-            style={{
-              width: 160,
-              height: 160,
-              borderRadius: 200,
-              marginBottom: 32,
-              backgroundColor: "#F5F5F5",
-            }}
+        {step.id === "education" && (
+          <Education
+            data={formData.education}
+            errors={errors}
+            onUpdate={(data) => updateFormData("education", data)}
+            onNext={nextStep}
+            onBack={prevStep}
           />
         )}
 
-        <Text
-          style={{
-            fontSize: 24,
-            fontWeight: "800",
-            textAlign: "center",
-            marginBottom: 8,
-            fontFamily: "Lato-Black",
-          }}
-        >
-          Welcome to gathr,
-        </Text>
-        <Text
-          style={{
-            fontSize: 24,
-            color: "#B08D57",
-            fontWeight: "800",
-            fontFamily: "Lato-Black",
-          }}
-        >
-          @{username}
-        </Text>
-      </View>
+        {step.id === "faith" && (
+          <Faith
+            data={formData.faith}
+            errors={errors}
+            onUpdate={(data) => updateFormData("faith", data)}
+            onNext={nextStep}
+            onBack={prevStep}
+          />
+        )}
 
-      {/* Okay Button */}
-      <TouchableOpacity
-        style={{
-          marginTop: "auto",
-          backgroundColor: "black",
-          paddingVertical: 16,
-          borderRadius: 12,
-          height: 56,
-          alignItems: "center",
-          justifyContent: "center",
-          marginBottom: 30,
-        }}
-        // onPress={() => console.log("Proceed", username)}
-        onPress={() => {
-          bottomSheetRef.current?.expand();
-        }}
-      >
-        <Text
-          style={{
-            color: "white",
-            textAlign: "center",
-            fontSize: 16,
-            fontWeight: "500",
-          }}
-        >
-          Okay
-        </Text>
-      </TouchableOpacity>
+        {step.id === "industry" && (
+          <Industry
+            data={formData.industry}
+            errors={errors}
+            onUpdate={(data) => updateFormData("industry", data)}
+            onNext={nextStep}
+            onBack={prevStep}
+          />
+        )}
 
-      <BottomSheet
-        ref={bottomSheetRef}
-        // onChange={handleSheetChanges}
-        index={-1}
-        snapPoints={["80%", "70%"]}
-        handleIndicatorStyle={{ backgroundColor: "#5E5E5F", width: 54 }}
-        onChange={() => {
-          console.log("bottom sheet changed");
-        }}
-        enableOverDrag
-        enablePanDownToClose
-        backdropComponent={renderBackdrop}
-      >
-        <BottomSheetScrollView
-          // keyboardShouldPersistTaps="handled"
-          style={{
-            flex: 1,
-            // padding: 36,
-            // backgroundColor: "blue",
-            width: "100%",
-          }}
+        {step.id === "location" && (
+          <Location
+            data={formData.locations}
+            errors={errors}
+            onUpdate={(data) => updateFormData("locations", data)}
+            onNext={nextStep}
+            onBack={prevStep}
+          />
+        )}
+      </Animated.View>
+    );
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView className="flex-1 p-4">
+        {/* User Preview Content */}
+        <View className="items-center mb-8">
+          <View className="w-24 h-24 rounded-full bg-gray-200 mb-4">
+            {params.profileImage ? (
+              <Image
+                source={{ uri: params.profileImage }}
+                className="w-full h-full rounded-full"
+              />
+            ) : (
+              <User size={96} className="text-gray-400" />
+            )}
+          </View>
+          <Text className="text-xl font-bold">
+            {params.firstName} {params.lastName}
+          </Text>
+          <Text className="text-gray-600">@{params.username}</Text>
+        </View>
+
+        <TouchableOpacity
+          onPress={handleStartOnboarding}
+          className="bg-blue-500 rounded-lg py-4 px-6 items-center"
         >
-          {pages[currentPage].content}
-        </BottomSheetScrollView>
-      </BottomSheet>
-    </KeyboardAvoidingView>
+          <Text className="text-white font-semibold">
+            Complete Your Profile
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+
+      {showOnboarding && (
+        <BottomSheet
+          ref={bottomSheetRef}
+          snapPoints={["85%"]}
+          backdropComponent={renderBackdrop}
+          enablePanDownToClose={false}
+        >
+          <KeyboardAwareScrollView
+            enableOnAndroid
+            enableAutomaticScroll
+            extraScrollHeight={20}
+            className="flex-1"
+          >
+            <BottomSheetScrollView
+              className="flex-1 px-4"
+              showsVerticalScrollIndicator={false}
+            >
+              {renderStepContent()}
+            </BottomSheetScrollView>
+          </KeyboardAwareScrollView>
+        </BottomSheet>
+      )}
+    </SafeAreaView>
   );
 };
 
 export default WelcomeScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  openButton: {
-    fontSize: 18,
-    color: "white",
-    backgroundColor: "black",
-    padding: 12,
-    borderRadius: 8,
-  },
-  contentContainer: {
-    flex: 1,
-    alignItems: "center",
-    padding: 16,
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
-  text: {
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  button: {
-    fontSize: 16,
-    color: "blue",
-    marginTop: 8,
-  },
-});
