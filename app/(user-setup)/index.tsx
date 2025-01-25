@@ -45,7 +45,7 @@ const ProfileSetup = () => {
     });
 
     if (!result.canceled) {
-      console.log("valuess,", result.assets[0].uri);
+      console.log("values,", result.assets[0].uri);
       onChange(result.assets[0].uri);
     }
   };
@@ -153,10 +153,10 @@ const ProfileSetup = () => {
                             )}
                           </TouchableOpacity>
 
-                          <View style={styles.plusIconView}>
+                          <View className="absolute bottom-[0.01px] right-[5px] bg-white rounded-full h-7 w-7 justify-center items-center">
                             <AntDesign
                               name="pluscircle"
-                              size={24}
+                              size={20}
                               color="#292D32"
                             />
                           </View>
@@ -169,9 +169,7 @@ const ProfileSetup = () => {
 
                     {/* Label */}
                     <View style={{ marginTop: 16 }}>
-                      <Text
-                        style={{ marginTop: 8, fontSize: 14, color: "#8E8E8E" }}
-                      >
+                      <Text className="text-[16px] text-black font-[Lato-Regular]">
                         Upload profile image
                       </Text>
                     </View>
@@ -329,16 +327,5 @@ const styles = StyleSheet.create({
     height: 53,
     fontFamily: "Lato-Regular",
     fontWeight: "400",
-  },
-  plusIconView: {
-    alignItems: "center",
-    position: "absolute",
-    bottom: 0.01,
-    right: 5,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 14,
-    height: 28,
-    width: 28,
-    justifyContent: "center",
   },
 });

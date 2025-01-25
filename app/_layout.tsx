@@ -31,7 +31,7 @@ export default function RootLayout() {
         console.log("first launch");
         await AsyncStorage.setItem("hasLaunched", "true");
       } else {
-        router.replace("/(onboarding)");
+        router.replace("/(user-setup)");
         console.log("not first launch");
       }
     } catch (error) {
