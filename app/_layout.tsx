@@ -1,3 +1,4 @@
+import "react-native-get-random-values";
 import { Slot, Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";

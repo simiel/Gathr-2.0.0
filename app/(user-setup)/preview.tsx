@@ -32,12 +32,6 @@ interface user {
 const WelcomeScreen = () => {
   // ref
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const animation = useRef<LottieView>(null);
-
-  // callbacks
-  // const handleSheetChanges = useCallback((index: number) => {
-  //   console.log("handleSheetChanges", index);
-  // }, []);
 
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -72,15 +66,7 @@ const WelcomeScreen = () => {
   // Define the content for each page
   const pages = [
     {
-      content: (
-        <Intro
-        //   onSkip={() => {
-        //     bottomSheetRef.current?.close();
-        //     router.navigate("/(main)");
-        //   }}
-        //   navigateForward={() => setCurrentPage(1)}
-        />
-      ),
+      content: <Intro onNext={() => setCurrentPage(1)} />,
     },
     {
       content: (
@@ -133,10 +119,10 @@ const WelcomeScreen = () => {
       {/* Profile Picture */}
 
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        {/* <LottieView
+        <LottieView
           autoPlay
-          source={require("@/assets/lottieFiles/party-confetti.json")}
-          ref={animation}
+          source={require("@/assets/animation/confetti.json")}
+        //   ref={animation}
           style={{
             width: 500,
             height: 500,
@@ -144,7 +130,7 @@ const WelcomeScreen = () => {
             justifyContent: "center",
             position: "absolute",
           }}
-        ></LottieView> */}
+        ></LottieView>
 
         {!profileImage || profileImage === undefined ? (
           <View

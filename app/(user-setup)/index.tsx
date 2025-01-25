@@ -57,9 +57,9 @@ const ProfileSetup = () => {
     watch,
   } = useForm({
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      userName: "",
+      firstName: "Samuel",
+      lastName: "Mensah",
+      userName: "smensah",
       profileImage: "",
     },
     mode: "onChange",
