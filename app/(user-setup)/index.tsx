@@ -27,9 +27,7 @@ interface user {
 }
 
 const ProfileSetup = () => {
-  const [isFirstNameFocused, setIsFirstNameFocused] = useState(false);
-  const [isLastNameFocused, setIsLastNameFocused] = useState(false);
-  const [isUsernameFocused, setIsUsernameFocused] = useState(false);
+  const [focusedField, setFocusedField] = useState("");
   const [user, setUser] = useState<user>({
     firstName: "",
     lastName: "",
@@ -96,27 +94,12 @@ const ProfileSetup = () => {
     });
   };
 
-  // errors if any
-
-  const userDetailsPresent = !!firstName && !!lastName && !!username;
-
   const isFormValid = firstName?.trim() && lastName?.trim() && username?.trim();
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "white",
-        padding: 16,
-        // paddingBottom: 32,
-      }}
-    >
+    <View className="flex-1 p-8 bg-white">
       <KeyboardAvoidingView
-        style={{
-          flex: 1,
-          backgroundColor: "white",
-          padding: 16,
-        }}
+        className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <SafeAreaView className="flex-1">
@@ -209,13 +192,14 @@ const ProfileSetup = () => {
                           onChangeText={onChange}
                           style={{
                             ...styles.inputBox,
-                            borderColor: isFirstNameFocused
-                              ? "black"
-                              : "#E5E5E5",
+                            borderColor:
+                              focusedField === "firstName"
+                                ? "black"
+                                : "#E5E5E5",
                           }}
                           returnKeyLabel="Done"
-                          onFocus={() => setIsFirstNameFocused(true)}
-                          onBlur={() => setIsFirstNameFocused(false)}
+                          onFocus={() => setFocusedField("firstName")}
+                          onBlur={() => setFocusedField("")}
                         />
                       )}
                       rules={{
@@ -237,13 +221,12 @@ const ProfileSetup = () => {
                           onChangeText={onChange}
                           style={{
                             ...styles.inputBox,
-                            borderColor: isLastNameFocused
-                              ? "black"
-                              : "#E5E5E5",
+                            borderColor:
+                              focusedField === "lastName" ? "black" : "#E5E5E5",
                           }}
                           returnKeyLabel="Done"
-                          onFocus={() => setIsLastNameFocused(true)}
-                          onBlur={() => setIsLastNameFocused(false)}
+                          onFocus={() => setFocusedField("lastName")}
+                          onBlur={() => setFocusedField("")}
                         />
                       )}
                       rules={{
@@ -278,13 +261,14 @@ const ProfileSetup = () => {
                             } // Force lowercase
                             style={{
                               ...styles.inputBox,
-                              borderColor: isUsernameFocused
-                                ? "black"
-                                : "#E5E5E5",
+                              borderColor:
+                                focusedField === "userName"
+                                  ? "black"
+                                  : "#E5E5E5",
                             }}
                             returnKeyLabel="Done"
-                            onFocus={() => setIsUsernameFocused(true)}
-                            onBlur={() => setIsUsernameFocused(false)}
+                            onFocus={() => setFocusedField("userName")}
+                            onBlur={() => setFocusedField("")}
                             autoCapitalize="none"
                           />
                         )}
@@ -308,7 +292,7 @@ const ProfileSetup = () => {
               marginTop: "auto",
               backgroundColor: isFormValid ? "black" : "#E5E5E5",
               paddingVertical: 16,
-              borderRadius: 12,
+              borderRadius: 100,
               height: 56,
               alignItems: "center",
               justifyContent: "center",
