@@ -1,12 +1,22 @@
-import { Tabs } from "expo-router";
-import React from "react";
+import { Tabs, useRouter } from "expo-router";
+import React, { useEffect } from "react";
 import { Platform } from "react-native";
+import { useAuth } from "@clerk/clerk-expo";
 
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isSignedIn) {
+      // If user is not signed in, redirect to auth
+      router.replace("/(onboarding)/get-started");
+    }
+  }, [isSignedIn]);
 
   return (
     <Tabs
@@ -15,7 +25,6 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: Platform.select({
           ios: {
-            // Use a transparent background on iOS to show the blur effect
             position: "absolute",
           },
           default: {},
@@ -31,7 +40,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{
-          title: "Profile",
+          title: "Explore",
         }}
       />
     </Tabs>
