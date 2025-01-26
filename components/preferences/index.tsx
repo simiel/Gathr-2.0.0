@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import LottieView from "lottie-react-native";
+import Swiper from "react-native-swiper";
 
 interface IntroProps {
   onNext: () => void;
@@ -9,7 +10,7 @@ interface IntroProps {
 
 const Intro: React.FC<IntroProps> = ({ onNext, onSkip }) => {
   return (
-    <View className="flex-1">
+    <View className="flex-1 pb-8">
       <View className="flex-1 items-center justify-center">
         <Text className="text-lg text-gray-600 text-center px-6 mb-8">
           Complete your profile to connect with like-minded individuals and

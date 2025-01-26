@@ -10,6 +10,7 @@ import { useAppBootstrap } from "@/hooks/useAppBootstrap";
 import { AppAssets } from "@/constants/AppAssets";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -53,10 +54,12 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <StatusBar style="dark" />
-        <Slot />
-      </Stack>
+      <BottomSheetModalProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+          <StatusBar style="dark" />
+          <Slot />
+        </Stack>
+      </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
 }

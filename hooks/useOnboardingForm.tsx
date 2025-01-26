@@ -11,6 +11,20 @@ export const GHANA_UNIVERSITIES = [
   // Add more universities...
 ] as const;
 
+export const GHANA_SECONDARY_SCHOOLS = [
+  "Presbyterian Boy's High School",
+  "Christ the King",
+  "New Life",
+  "St. Anthony's",
+  "St. Francis",
+  "St. Mary's",
+  "St. Paul's",
+  "St. Peter's",
+  "St. Thomas's",
+  "St. Vincent's",
+  "St. Xavier's",
+] as const;
+
 export const FAITH_OPTIONS = {
   Christian: {
     label: "Christian",
@@ -83,7 +97,7 @@ export const onboardingSchema = z.object({
     .max(5, "You can select up to 5 industries"),
   locations: z
     .array(z.string())
-    .min(1, "At least one location is required")
+    .min(0)
     .max(5, "You can add up to 5 locations"),
 });
 
@@ -104,36 +118,37 @@ export const useOnboardingForm = () => {
   const steps: StepConfig[] = [
     {
       id: "intro",
-      title: "Welcome to Gathr",
+      title: "Personalize your experience",
       description:
-        "Let's get to know you better! This will help us create a more personalized experience for you.",
+        "In order to get the best experience on Gathr. We would like to know a little bit more about you.",
       animation: require("@/assets/animation/welcome.json"),
     },
     {
       id: "education",
-      title: "Your Education Journey",
+      title: "Your Education",
       description:
-        "Tell us about your educational background to help connect you with like-minded individuals.",
+        "Tell us a little about the schools you completed. We can help you find some mates here.",
       animation: require("@/assets/animation/education.json"),
     },
     {
       id: "faith",
-      title: "Faith & Beliefs",
+      title: "Faith",
       description:
-        "Share your faith to connect with people who share your values and beliefs.",
+        "Tell us a little about your faith. We can help you find family and friends of the same faith here",
       animation: require("@/assets/animation/faith.json"),
     },
     {
       id: "industry",
       title: "Professional Interests",
       description:
-        "Select at least 3 industries you're interested in or working in.",
+        "We can help you find gatherings that are of the same industry as you.",
       animation: require("@/assets/animation/industry.json"),
     },
     {
       id: "location",
       title: "Your Locations",
-      description: "Add locations where you live or frequently visit.",
+      description:
+        "With gathr you can get to talk with the friend or family in your neighborhood about important matters ",
       animation: require("@/assets/animation/location.json"),
     },
   ];
@@ -172,19 +187,32 @@ export const useOnboardingForm = () => {
     }
   };
 
-  const updateFormData = (stepId: keyof OnboardingFormData, data: any) => {
-    if (validateStep(stepId, data)) {
-      setFormData((prev) => ({
-        ...prev,
-        [stepId]: data,
-      }));
-      return true;
+  const updateFormData = (
+    stepId: keyof OnboardingFormData,
+    data: any
+  ): boolean => {
+    try {
+      if (validateStep(stepId, data)) {
+        setFormData((prev) => ({
+          ...prev,
+          [stepId]: data,
+        }));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error updating form data:", error);
+      return false;
     }
-    return false;
   };
 
   const skipOnboarding = () => {
     // Handle skipping logic here
+    return true;
+  };
+
+  const submitForm = async () => {
+    // Handle form submission logic here
     return true;
   };
 
@@ -199,5 +227,6 @@ export const useOnboardingForm = () => {
     skipOnboarding,
     isFirstStep: currentStep === 0,
     isLastStep: currentStep === steps.length - 1,
+    submitForm,
   };
 };

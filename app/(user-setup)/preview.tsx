@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useRef, useCallback, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
@@ -9,13 +9,13 @@ import { User } from "iconsax-react-native";
 import LottieView from "lottie-react-native";
 import { useOnboardingForm } from "@/hooks/useOnboardingForm";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Animated, {
-  FadeInRight,
-  FadeOutLeft,
-  SlideInRight,
-  SlideOutLeft,
-} from "react-native-reanimated";
+import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Intro from "@/components/preferences";
+import Education from "@/components/preferences/Education";
+import Faith from "@/components/preferences/Faith";
+import Industry from "@/components/preferences/Industry";
+import Location from "@/components/preferences/Location";
 
 // Import step components
 
@@ -34,6 +34,7 @@ const WelcomeScreen = () => {
     skipOnboarding,
     isFirstStep,
     isLastStep,
+    submitForm,
   } = useOnboardingForm();
 
   const params = useLocalSearchParams<{
@@ -59,6 +60,26 @@ const WelcomeScreen = () => {
     bottomSheetRef.current?.expand();
   };
 
+  const submit = async () => {
+    const isFormValid = await submitForm();
+    if (isFormValid) {
+      // Navigate to the next screen
+      console.log("submit");
+      router.navigate({
+        pathname: "/(main)",
+        params: {},
+      });
+    }
+  };
+
+  const skipPreferences = () => {
+    // Navigate to the next screen
+    router.navigate({
+      pathname: "/(main)",
+      params: {},
+    });
+  };
+
   // Render step content based on current step
   const renderStepContent = () => {
     const step = steps[currentStep];
@@ -71,10 +92,10 @@ const WelcomeScreen = () => {
       >
         <View className="h-40 w-full items-center justify-center">
           <LottieView
-            source={require(`@/assets/animations/${step.animation}`)}
+            source={step.animation}
             autoPlay
             loop
-            className="w-full h-full"
+            style={{ width: "100%", height: "100%" }}
           />
         </View>
 
@@ -102,7 +123,6 @@ const WelcomeScreen = () => {
 
         {step.id === "faith" && (
           <Faith
-            data={formData.faith}
             errors={errors}
             onUpdate={(data) => updateFormData("faith", data)}
             onNext={nextStep}
@@ -125,7 +145,7 @@ const WelcomeScreen = () => {
             data={formData.locations}
             errors={errors}
             onUpdate={(data) => updateFormData("locations", data)}
-            onNext={nextStep}
+            onNext={submit}
             onBack={prevStep}
           />
         )}
@@ -134,56 +154,77 @@ const WelcomeScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="flex-1 p-4">
+    <SafeAreaView className="flex-1 bg-white p-8">
+      <View className="flex-1">
+        <LottieView
+          source={require("@/assets/animation/confetti.json")}
+          autoPlay
+          loop={true}
+          style={{ width: "100%", height: "100%", position: "absolute" }}
+        />
         {/* User Preview Content */}
-        <View className="items-center mb-8">
-          <View className="w-24 h-24 rounded-full bg-gray-200 mb-4">
-            {params.profileImage ? (
+        <View className="items-center flex-1 justify-center">
+          <View className="">
+            {!params.profileImage ? (
+              <View className="w-[160px] h-[160px] rounded-full mb-[32px] items-center justify-center bg-[#f5f5f5]">
+                <User size={100} variant="Bold" color="#0D0D0E" />
+              </View>
+            ) : (
               <Image
                 source={{ uri: params.profileImage }}
-                className="w-full h-full rounded-full"
+                style={{
+                  width: 160,
+                  height: 160,
+                  borderRadius: 200,
+                  marginBottom: 32,
+                  backgroundColor: "#F5F5F5",
+                }}
               />
-            ) : (
-              <User size={96} className="text-gray-400" />
             )}
           </View>
-          <Text className="text-xl font-bold">
-            {params.firstName} {params.lastName}
-          </Text>
-          <Text className="text-gray-600">@{params.username}</Text>
+
+          <View>
+            <Text className="text-[24px] font-[Lato-Black] text-center mb-[8px]">
+              Welcome to gathr,
+            </Text>
+            <Text className="text-[24px] text-[#B08D57] font-[Lato-Black] text-center mb-[8px]">
+              @{params.username}
+            </Text>
+          </View>
         </View>
 
         <TouchableOpacity
           onPress={handleStartOnboarding}
-          className="bg-blue-500 rounded-lg py-4 px-6 items-center"
+          className="bg-black rounded-full py-6 px-6 items-center"
         >
-          <Text className="text-white font-semibold">
-            Complete Your Profile
-          </Text>
+          <Text className="text-white font-semibold">Okay</Text>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
+      {/* </ScrollView> */}
 
       {showOnboarding && (
         <BottomSheet
           ref={bottomSheetRef}
-          snapPoints={["85%"]}
+          //   snapPoints={[200]}
+          enableDynamicSizing
           backdropComponent={renderBackdrop}
           enablePanDownToClose={false}
+          keyboardBlurBehavior="restore"
+          android_keyboardInputMode="adjustResize"
         >
-          <KeyboardAwareScrollView
+          {/* <KeyboardAwareScrollView
             enableOnAndroid
             enableAutomaticScroll
             extraScrollHeight={20}
             className="flex-1"
+          > */}
+          <BottomSheetScrollView
+            className="flex-1 px-4"
+            showsVerticalScrollIndicator={false}
           >
-            <BottomSheetScrollView
-              className="flex-1 px-4"
-              showsVerticalScrollIndicator={false}
-            >
-              {renderStepContent()}
-            </BottomSheetScrollView>
-          </KeyboardAwareScrollView>
+            {renderStepContent()}
+          </BottomSheetScrollView>
+          {/* </KeyboardAwareScrollView> */}
         </BottomSheet>
       )}
     </SafeAreaView>
