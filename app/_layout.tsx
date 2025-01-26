@@ -11,6 +11,8 @@ import { AppAssets } from "@/constants/AppAssets";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
+import Constants from "expo-constants";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,30 +27,61 @@ export default function RootLayout() {
   const { isReady, error } = useAppBootstrap(AppAssets);
   const router = useRouter();
 
-  const checkFirstLaunch = async () => {
-    try {
-      const hasLaunched = await AsyncStorage.getItem("hasLaunched");
-      if (hasLaunched === null) {
-        router.replace("/(onboarding)/splash");
-        console.log("first launch");
-        await AsyncStorage.setItem("hasLaunched", "true");
-      } else {
-        router.replace("/(user-setup)");
-        console.log("not first launch");
-      }
-    } catch (error) {
-      console.error("Error checking first launch:", error);
-    }
-  };
-
   useEffect(() => {
     if (isReady || error) {
       SplashScreen.hideAsync();
-      checkFirstLaunch();
     }
   }, [isReady, error]);
 
   if (!isReady) {
+    return null;
+  }
+
+  return (
+    <ClerkProvider
+      publishableKey={Constants.expoConfig?.extra?.CLERK_PUBLISHABLE_KEY}
+    >
+      <RootLayoutNav />
+    </ClerkProvider>
+  );
+}
+
+function RootLayoutNav() {
+  const { isLoaded, isSignedIn } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    const checkAuthAndRoute = async () => {
+      try {
+        const hasLaunched = await AsyncStorage.getItem("hasLaunched");
+
+        if (!isSignedIn) {
+          // User is not authenticated
+          if (hasLaunched === null) {
+            // First launch - show splash screen
+            router.replace("/(onboarding)/splash");
+            await AsyncStorage.setItem("hasLaunched", "true");
+          } else {
+            // Not first launch - show get started
+            router.replace("/(onboarding)/get-started");
+          }
+        } else {
+          // User is authenticated - redirect to main app
+          router.replace("/(main)");
+        }
+      } catch (error) {
+        console.error("Error in auth routing:", error);
+        // On error, default to onboarding
+        router.replace("/(onboarding)/get-started");
+      }
+    };
+
+    checkAuthAndRoute();
+  }, [isLoaded, isSignedIn]);
+
+  if (!isLoaded) {
     return null;
   }
 
