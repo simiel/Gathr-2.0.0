@@ -8,7 +8,6 @@
     "scheme": "gathr",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-
     "ios": {
       "supportsTablet": true
     },
@@ -16,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon/adaptive-icon.png",
         "backgroundColor": "#000000"
-      }
+      },
+      "package": "com.simiel.Gathr"
     },
     "splash": {
       "image": "./assets/splash/splash-icon.png",
@@ -30,7 +30,9 @@
     },
     "plugins": [
       "expo-router",
-      ["expo-splash-screen"],
+      [
+        "expo-splash-screen"
+      ],
       [
         "@sentry/react-native/expo",
         {
@@ -42,6 +44,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b44fa021-7eef-4089-91ad-041ebde47db9"
+      }
     }
   }
 }
