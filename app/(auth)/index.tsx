@@ -26,10 +26,13 @@ import parsePhoneNumber, {
 import { useSignIn, useSignUp } from "@clerk/clerk-expo";
 import { useForm, Controller } from "react-hook-form";
 
+type FormData = {
+  phoneNumber: string;
+};
+
 const SignInScreen = () => {
-  // const { isLoaded } = useSignIn();
-  // const { isLoaded: isSignInLoaded, signIn } = useSignIn();
-  // const { isLoaded: isSignUpLoaded, signUp } = useSignUp();
+  const { isLoaded: isSignInLoaded, signIn, setActive } = useSignIn();
+  const { isLoaded: isSignUpLoaded, signUp } = useSignUp();
   const [countryCode, setCountryCode] = useState<CountryCode>("GH"); // Default country code
   const [callingCode, setCallingCode] = useState("+233"); // Default calling code
   const [openCountryPicker, setOpenCountryPicker] = useState(false);
@@ -39,11 +42,10 @@ const SignInScreen = () => {
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm();
+  } = useForm<FormData>();
   const phoneNumber = watch("phoneNumber");
 
   const handleCountrySelect = (country: Country) => {
-    setCountryCode(country.cca2 as CountryCode);
     setCountryCode(country.cca2);
     setCallingCode(`+${country.callingCode[0]}`);
   };
@@ -51,42 +53,93 @@ const SignInScreen = () => {
   const phone = parsePhoneNumber(`${callingCode}${phoneNumber}`);
   const isNumberValid = phoneNumber?.length > 0 && phone?.isValid();
 
-  const testSignUpWithPhoneNumber = async () => {
-    console.log("testing phone number");
-
+  const onSubmit = async (data: { phoneNumber: string }) => {
     try {
       setIsLoading(true);
-      console.log("Starting sign-up process with phone number...");
+      const fullPhoneNumber = `${callingCode}${data.phoneNumber}`;
+      console.log("🚀 ~ onSubmit ~ data:", fullPhoneNumber);
+      const parsedNumber = parsePhoneNumber(fullPhoneNumber);
 
-      // await signUp.create({ phoneNumber: phone?.number });
-      // await signUp?.create({
-      //   phoneNumber: phone?.number,
-      // });
+      if (!parsedNumber?.isValid()) {
+        Alert.alert("Error", "Please enter a valid phone number");
+        return;
+      }
 
-      console.log("Sign-up created. Preparing phone number verification...");
+      // First try to sign in
+      try {
+        if (!signUp) {
+          Alert.alert("Error", "Sign-in service is unavailable.");
+          return;
+        }
+        const signUpResponse = await signUp.create({
+          phoneNumber: fullPhoneNumber,
+        });
 
-      // await signUp?.preparePhoneNumberVerification();
-      // setIsLoading(false);
-      // router.push({
-      //   pathname: "/(auth)/otp",
-      //   params: { phoneNumber: phone?.number },
-      // });
-    } catch (error) {
-      console.error("Error sending OTP:", error);
+        signUp!.preparePhoneNumberVerification();
+
+        router.push({
+          pathname: "/(auth)/otp",
+          params: {
+            phoneNumber: fullPhoneNumber,
+            signInId: signUpResponse.id,
+          },
+        });
+      } catch (err: any) {
+        // If sign up fails, try to sign in
+        if (err.errors?.[0]?.code === "identifier_not_found") {
+          try {
+            if (!signIn) {
+              Alert.alert("Error", "Sign-in service is unavailable.");
+              return;
+            }
+
+            await trySignIn();
+          } catch (signUpErr: any) {
+            Alert.alert(
+              "Error",
+              signUpErr.errors?.[0]?.message || "Failed to sign up"
+            );
+          }
+        } else {
+          Alert.alert("Error", err.errors?.[0]?.message || "Failed to sign in");
+        }
+      }
+    } catch (error: any) {
+      Alert.alert("Error", "An unexpected error occurred");
+    } finally {
       setIsLoading(false);
-
-      Alert.alert(
-        "Error",
-        "Failed to send OTP. Please check your number and try again."
-      );
     }
   };
 
-  const submit = async (data: any) => {
-    phone?.isValid ? router.navigate("/(auth)/otp") : console.log("null");
-    console.log(phone?.number);
-    console.log(data);
+  const trySignIn = async () => {
+    console.log("trySignIn", phoneNumber);
+
+    const { supportedFirstFactors } = await signIn!.create({
+      identifier: phoneNumber,
+    });
+
+    const firstPhoneFactor: any = supportedFirstFactors!.find((factor: any) => {
+      return factor.strategy === "phone_code";
+    });
+
+    const { phoneNumberId } = firstPhoneFactor;
+
+    await signIn!.prepareFirstFactor({
+      strategy: "phone_code",
+      phoneNumberId,
+    });
+
+    router.replace(`/otp?phoneNumber=${phoneNumber}`, {});
+    setIsLoading(false);
   };
+
+  if (!isSignInLoaded || !isSignUpLoaded) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
@@ -179,8 +232,7 @@ const SignInScreen = () => {
                   isNumberValid ? "bg-black" : "bg-gray-300"
                 }`}
                 disabled={phoneNumber?.length === 0 || loading}
-                onPress={handleSubmit(submit)}
-                // onPress={testSignUpWithPhoneNumber}
+                onPress={handleSubmit(onSubmit)}
               >
                 {loading ? (
                   <ActivityIndicator size="small" color={"white"} />

@@ -8,6 +8,7 @@ import {
   Platform,
   StyleSheet,
   SafeAreaView,
+  Alert,
 } from "react-native";
 import { ArrowLeft2 } from "iconsax-react-native";
 import {
@@ -16,21 +17,25 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
+import { useSignIn, useSignUp } from "@clerk/clerk-expo";
+
+const CELL_COUNT = 6;
+const RESEND_COOLDOWN = 30;
 
 const OTPScreen = () => {
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [timer, setTimer] = useState(30);
+  const params = useLocalSearchParams<{
+    phoneNumber: string;
+    signInId?: string;
+    signUpId?: string;
+  }>();
 
-  useEffect(() => {
-    if (otp.every((d) => d !== "")) {
-      console.log("Filled");
-    } else {
-      console.log("Unfilled");
-    }
-  }, [otp]);
-
+  const { signIn, setActive } = useSignIn();
+  const { signUp } = useSignUp();
   const [code, setCode] = useState("");
-  const CELL_COUNT = 6;
+  const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState(RESEND_COOLDOWN);
+  const [isResending, setIsResending] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout>();
 
   const ref = useBlurOnFulfill({ value: code, cellCount: CELL_COUNT });
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
@@ -38,9 +43,95 @@ const OTPScreen = () => {
     setValue: setCode,
   });
 
-  const verifyCode = () => {
-    console.log("code", code);
-    router.navigate("/(user-setup)");
+  useEffect(() => {
+    startTimer();
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
+
+  const startTimer = () => {
+    setTimer(RESEND_COOLDOWN);
+    timerRef.current = setInterval(() => {
+      setTimer((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current!);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const handleResendCode = async () => {
+    try {
+      setIsResending(true);
+      if (params.signInId) {
+        await signIn?.create({
+          identifier: params.phoneNumber,
+          strategy: "phone_code",
+        });
+      } else if (params.signUpId) {
+        const signUpAttempt = await signUp?.create({
+          phoneNumber: params.phoneNumber,
+        });
+        await signUpAttempt?.preparePhoneNumberVerification();
+      }
+      startTimer();
+      Alert.alert("Success", "Code resent successfully");
+    } catch (error: any) {
+      Alert.alert(
+        "Error",
+        error.errors?.[0]?.message || "Failed to resend code"
+      );
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  const verifyCode = async () => {
+    try {
+      setLoading(true);
+      if (params.signInId) {
+        const signInAttempt = await signIn?.attemptFirstFactor({
+          strategy: "phone_code",
+          code,
+        });
+
+        if (signInAttempt?.status === "complete") {
+          await setActive?.({ session: signInAttempt.createdSessionId });
+          router.replace("/(main)");
+        }
+      } else if (params.signUpId) {
+        const signUpAttempt = await signUp?.attemptPhoneNumberVerification({
+          code,
+        });
+
+        if (signUpAttempt?.status === "complete") {
+          const signInAttempt = await signIn?.create({
+            identifier: params.phoneNumber,
+            strategy: "phone_code",
+          });
+
+          await signInAttempt?.attemptFirstFactor({
+            strategy: "phone_code",
+            code,
+          });
+
+          router.replace("/(main)");
+        }
+      }
+    } catch (error: any) {
+      Alert.alert(
+        "Error",
+        error.errors?.[0]?.message || "Invalid verification code"
+      );
+      setCode("");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -72,8 +163,7 @@ const OTPScreen = () => {
                 Verify Your Gathr Account
               </Text>
               <Text className="text-[16px] font-[Lato-Regular] text-black text-center">
-                We have sent you an OTP. Please check your email {`\n`} to
-                complete this process.
+                Enter the code sent to {params.phoneNumber}
               </Text>
             </View>
 
@@ -88,7 +178,6 @@ const OTPScreen = () => {
                 rootStyle={styles.codeFieldRoot}
                 keyboardType="number-pad"
                 textContentType="oneTimeCode"
-                // autoComplete={Platform.select({ android: 'sms-otp', default: 'one-time-code' })}
                 autoComplete="one-time-code"
                 testID="my-code-input"
                 renderCell={({ index, symbol, isFocused }) => (
@@ -107,21 +196,21 @@ const OTPScreen = () => {
           </View>
 
           <View className="flex-1">
-            {/* Countdown Timer */}
-            <View style={{ marginTop: 20, alignItems: "center" }}>
-              <Text className="text-[16px] font-[Lato-Medium] text-[#B2B3B3]">
-                Didn't receive OTP code?{" "}
-                {timer > 0 ? (
-                  <Text className="text-[16px] font-[Lato-Bold] text-black">
-                    00:{timer.toString().padStart(2, "0")}
-                  </Text>
-                ) : (
-                  <Text className="text-[16px] font-[Lato-Medium] text-black">
-                    Resend OTP
-                  </Text>
-                )}
+            <Text className="text-[16px] font-[Lato-Medium] text-[#B2B3B3]">
+              Didn't receive the code?{" "}
+            </Text>
+            <TouchableOpacity
+              onPress={handleResendCode}
+              disabled={timer > 0 || isResending}
+            >
+              <Text className="text-[16px] font-[Lato-Medium] text-black">
+                {isResending
+                  ? "Resending..."
+                  : timer > 0
+                  ? `Resend in ${timer}s`
+                  : "Resend Code"}
               </Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
       </SafeAreaView>
