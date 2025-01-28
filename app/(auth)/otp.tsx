@@ -17,7 +17,11 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from "react-native-confirmation-code-field";
-import { useSignIn, useSignUp } from "@clerk/clerk-expo";
+import {
+  isClerkAPIResponseError,
+  useSignIn,
+  useSignUp,
+} from "@clerk/clerk-expo";
 
 const CELL_COUNT = 6;
 const RESEND_COOLDOWN = 30;
@@ -52,6 +56,22 @@ const OTPScreen = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (code.length === 6) {
+      console.log("verify", code);
+
+      if (!params.signInId) {
+        console.log("🚀 ~ useEffect ~ params.signInId:", params.signInId);
+        console.log("signin");
+        veryifySignIn();
+        console.log("🚀 ~ signin done here");
+      } else {
+        verifyCode();
+        console.log("🚀 ~ signin done here");
+      }
+    }
+  }, [code]);
+
   const startTimer = () => {
     setTimer(RESEND_COOLDOWN);
     timerRef.current = setInterval(() => {
@@ -65,80 +85,71 @@ const OTPScreen = () => {
     }, 1000);
   };
 
-  const handleResendCode = async () => {
-    try {
-      setIsResending(true);
-      if (params.signInId) {
-        await signIn?.create({
-          identifier: params.phoneNumber,
-          strategy: "phone_code",
-        });
-      } else if (params.signUpId) {
-        const signUpAttempt = await signUp?.create({
-          phoneNumber: params.phoneNumber,
-        });
-        await signUpAttempt?.preparePhoneNumberVerification();
-      }
-      startTimer();
-      Alert.alert("Success", "Code resent successfully");
-    } catch (error: any) {
-      Alert.alert(
-        "Error",
-        error.errors?.[0]?.message || "Failed to resend code"
-      );
-    } finally {
-      setIsResending(false);
-    }
-  };
-
   const verifyCode = async () => {
     try {
-      setLoading(true);
-      if (params.signInId) {
-        const signInAttempt = await signIn?.attemptFirstFactor({
-          strategy: "phone_code",
-          code,
-        });
+      await signUp!.attemptPhoneNumberVerification({
+        code,
+      });
 
-        if (signInAttempt?.status === "complete") {
-          await setActive?.({ session: signInAttempt.createdSessionId });
-          router.replace("/(main)");
-        }
-      } else if (params.signUpId) {
-        const signUpAttempt = await signUp?.attemptPhoneNumberVerification({
-          code,
-        });
-
-        if (signUpAttempt?.status === "complete") {
-          const signInAttempt = await signIn?.create({
-            identifier: params.phoneNumber,
-            strategy: "phone_code",
-          });
-
-          await signInAttempt?.attemptFirstFactor({
-            strategy: "phone_code",
-            code,
-          });
-
-          router.replace("/(main)");
-        }
+      await setActive!({ session: signUp!.createdSessionId });
+      router.replace("/(user-setup)");
+    } catch (err) {
+      console.log("error", JSON.stringify(err, null, 2));
+      if (isClerkAPIResponseError(err)) {
+        Alert.alert("Error", err.errors[0].message);
       }
-    } catch (error: any) {
-      Alert.alert(
-        "Error",
-        error.errors?.[0]?.message || "Invalid verification code"
-      );
-      setCode("");
-    } finally {
-      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (code.length === CELL_COUNT) {
-      verifyCode();
+  const veryifySignIn = async () => {
+    try {
+      await signIn!.attemptFirstFactor({
+        strategy: "phone_code",
+        code,
+      });
+
+      await setActive!({ session: signIn!.createdSessionId });
+      router.replace("/(user-setup)");
+    } catch (err) {
+      console.log("error", JSON.stringify(err, null, 2));
+      if (isClerkAPIResponseError(err)) {
+        Alert.alert("Error", err.errors[0].message);
+      }
     }
-  }, [code]);
+  };
+
+  const resendCode = async () => {
+    try {
+      if (!params.signInId) {
+        const { supportedFirstFactors } = await signIn!.create({
+          identifier: params.phoneNumber,
+        });
+
+        const firstPhoneFactor: any = supportedFirstFactors!.find(
+          (factor: any) => {
+            return factor.strategy === "phone_code";
+          }
+        );
+
+        const { phoneNumberId } = firstPhoneFactor;
+
+        await signIn!.prepareFirstFactor({
+          strategy: "phone_code",
+          phoneNumberId,
+        });
+      } else {
+        await signUp!.create({
+          phoneNumber: params.phoneNumber,
+        });
+        signUp!.preparePhoneNumberVerification();
+      }
+    } catch (err) {
+      console.log("error", JSON.stringify(err, null, 2));
+      if (isClerkAPIResponseError(err)) {
+        Alert.alert("Error", err.errors[0].message);
+      }
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -200,7 +211,7 @@ const OTPScreen = () => {
               Didn't receive the code?{" "}
             </Text>
             <TouchableOpacity
-              onPress={handleResendCode}
+              onPress={resendCode}
               disabled={timer > 0 || isResending}
             >
               <Text className="text-[16px] font-[Lato-Medium] text-black">
