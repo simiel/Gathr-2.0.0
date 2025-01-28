@@ -5,6 +5,7 @@ import {
   GHANA_UNIVERSITIES,
   GHANA_SECONDARY_SCHOOLS,
 } from "@/hooks/useOnboardingForm";
+import { ArrowLeft } from "iconsax-react-native";
 
 interface EducationProps {
   data?: {
@@ -51,6 +52,27 @@ const Education: React.FC<EducationProps> = ({
 
   return (
     <View className="flex-1 pb-8">
+      {/* Header */}
+      <View className="flex-row mt-8 mb-4 gap-4 items-center">
+        <TouchableOpacity className="">
+          <ArrowLeft size={24} color="#000" />
+        </TouchableOpacity>
+        <View className="bg-[#FFEABE] h-[24px] px-[12px] items-center justify-center rounded-full">
+          <Text className="text-[16px] font-[Lato-Semibold] text-black">
+            1/4
+          </Text>
+        </View>
+        <View className="">
+          <Text className="text-black font-[Lato-Black] text-[20px]">
+            Your Education
+          </Text>
+        </View>
+        <TouchableOpacity className="ml-auto">
+          <Text className="text-black font-[Lato-Regular] text-[16px]">
+            Skip
+          </Text>
+        </TouchableOpacity>
+      </View>
       <View className="mb-6">
         <Text className="text-gray-700 mb-2">Secondary School</Text>
         <DropDownPicker

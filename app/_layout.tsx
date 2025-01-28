@@ -65,7 +65,7 @@ function RootLayoutNav() {
             await AsyncStorage.setItem("hasLaunched", "true");
           } else {
             // Not first launch - show get started
-            router.replace("/(onboarding)/get-started");
+            router.replace("/(user-setup)/preview");
           }
         } else {
           // User is authenticated - redirect to main app

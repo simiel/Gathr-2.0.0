@@ -80,6 +80,7 @@ const Faith: React.FC<FaithProps> = ({
             borderRadius: 8,
           }}
           listMode="SCROLLVIEW"
+          dropDownDirection="TOP"
           scrollViewProps={{
             nestedScrollEnabled: true,
           }}
@@ -109,6 +110,7 @@ const Faith: React.FC<FaithProps> = ({
             textStyle={{
               fontSize: 16,
             }}
+            dropDownDirection="TOP"
             dropDownContainerStyle={{
               borderColor: "#E5E7EB",
               borderRadius: 8,

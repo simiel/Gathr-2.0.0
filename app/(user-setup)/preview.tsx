@@ -5,7 +5,7 @@ import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
-import { User } from "iconsax-react-native";
+import { ArrowLeft, User } from "iconsax-react-native";
 import LottieView from "lottie-react-native";
 import { useOnboardingForm } from "@/hooks/useOnboardingForm";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -88,24 +88,48 @@ const WelcomeScreen = () => {
       <Animated.View
         entering={FadeInRight}
         exiting={FadeOutLeft}
-        className="flex-1"
+        className="flex-1 px-2"
       >
-        <View className="h-40 w-full items-center justify-center">
-          <LottieView
-            source={step.animation}
-            autoPlay
-            loop
-            style={{ width: "100%", height: "100%" }}
-          />
-        </View>
+        {currentStep > 0 && (
+          <>
+            <View className="flex-row mt-8 mb-4 gap-4 items-center">
+              <TouchableOpacity className="">
+                <ArrowLeft size={24} color="#000" />
+              </TouchableOpacity>
+              <View className="bg-[#FFEABE] h-[24px] px-[12px] items-center justify-center rounded-full">
+                <Text className="text-[16px] font-[Lato-Semibold] text-black">
+                  {currentStep}/{steps.length - 1}
+                </Text>
+              </View>
+              <View className="">
+                <Text className="text-black font-[Lato-Black] text-[20px]">
+                  Your Education
+                </Text>
+              </View>
+              <TouchableOpacity className="ml-auto">
+                <Text className="text-black font-[Lato-Regular] text-[16px]">
+                  Skip
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View className="h-40 w-full items-center justify-center ">
+              <LottieView
+                source={step.animation}
+                autoPlay
+                loop
+                style={{ width: "100%", height: "100%" }}
+              />
+            </View>
 
-        <Text className="text-2xl font-bold text-center mt-4 mb-2">
-          {step.title}
-        </Text>
+            <Text className="text-2xl font-bold text-center mt-4 mb-2">
+              {step.title}
+            </Text>
 
-        <Text className="text-gray-600 text-center mb-6">
-          {step.description}
-        </Text>
+            <Text className="text-gray-600 text-center mb-6">
+              {step.description}
+            </Text>
+          </>
+        )}
 
         {step.id === "intro" && (
           <Intro onNext={nextStep} onSkip={skipOnboarding} />
