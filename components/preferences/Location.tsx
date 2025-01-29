@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  TextInput,
+  ScrollView,
+  Alert,
 } from "react-native";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
-import { Ionicons } from "@expo/vector-icons";
+import { Location as LocationIcon, CloseCircle } from "iconsax-react-native";
 
 interface LocationProps {
   data?: string[];
@@ -16,6 +18,7 @@ interface LocationProps {
   onUpdate: (data: string[]) => boolean;
   onNext: () => void;
   onBack: () => void;
+  maxLocations?: number;
 }
 
 const Location: React.FC<LocationProps> = ({
@@ -24,21 +27,53 @@ const Location: React.FC<LocationProps> = ({
   onUpdate,
   onNext,
   onBack,
+  maxLocations = 5,
 }) => {
-  const [locations, setLocations] = useState<string[]>(data);
+  const [locations, setLocations] = useState<string[]>(
+    data.length > 0 ? data : [""]
+  );
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
 
-  const addLocation = (location: string) => {
-    if (locations.length < 5) {
-      setLocations((prev) => [...prev, location]);
+  // Add a new empty location when the last input is being typed in
+  const handleLocationChange = (text: string, index: number) => {
+    const newLocations = [...locations];
+    newLocations[index] = text;
+    setLocations(newLocations);
+
+    // If this is the last input and it's not empty, add a new empty input
+    if (
+      index === locations.length - 1 &&
+      text.trim() !== "" &&
+      locations.length < maxLocations
+    ) {
+      setLocations([...newLocations, ""]);
     }
   };
 
   const removeLocation = (index: number) => {
-    setLocations((prev) => prev.filter((_, i) => i !== index));
+    // Don't remove if it's the last empty input
+    if (locations.length === 1 && locations[0] === "") {
+      return;
+    }
+
+    const newLocations = locations.filter((_, i) => i !== index);
+    // Ensure there's always at least one input
+    if (newLocations.length === 0) {
+      newLocations.push("");
+    }
+    setLocations(newLocations);
   };
 
   const handleNext = () => {
-    if (onUpdate(locations)) {
+    // Filter out empty locations before updating
+    const filteredLocations = locations.filter((loc) => loc.trim() !== "");
+
+    if (filteredLocations.length === 0) {
+      Alert.alert("Error", "Please add at least one location");
+      return;
+    }
+
+    if (onUpdate(filteredLocations)) {
       onNext();
     }
   };
@@ -49,48 +84,60 @@ const Location: React.FC<LocationProps> = ({
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View className="mb-8">
+        <ScrollView className="flex-1">
           <View className="mb-6">
-            <BottomSheetTextInput
-              placeholder="Search for a location"
-              style={{
-                borderWidth: 1,
-                borderColor: "black",
-                borderRadius: 8,
-                padding: 16,
-              }}
-            />
+            <Text className="text-[16px] font-[Lato-Regular] text-black">
+              Where do you live?
+            </Text>
           </View>
 
-          <View className="mb-6">
+          <View className="gap-4">
             {locations.map((location, index) => (
-              <View
-                key={index}
-                className="flex-row items-center justify-between bg-gray-50 p-4 rounded-lg mb-2"
-              >
-                <Text className="flex-1 text-gray-700">{location}</Text>
-                <TouchableOpacity
-                  onPress={() => removeLocation(index)}
-                  className="ml-2"
-                >
-                  <Ionicons name="close-circle" size={24} color="#EF4444" />
-                </TouchableOpacity>
+              <View key={index} className="relative">
+                <View className="flex-row items-center">
+                  <View className="flex-1 relative">
+                    <BottomSheetTextInput
+                      className={`bg-gray-100 rounded-lg h-[48px] px-4 py-3 pr-12 font-[Lato-Regular] ${
+                        focusedIndex === index ? "border border-blue-500" : ""
+                      }`}
+                      placeholder="Enter location"
+                      value={location}
+                      onChangeText={(text) => handleLocationChange(text, index)}
+                      onFocus={() => setFocusedIndex(index)}
+                      onBlur={() => setFocusedIndex(null)}
+                    />
+                    <View className="absolute right-3 top-3">
+                      <LocationIcon size={24} color="#666" />
+                    </View>
+                  </View>
+                  {(locations.length > 1 || location !== "") && (
+                    <TouchableOpacity
+                      onPress={() => removeLocation(index)}
+                      className="ml-2 p-2"
+                    >
+                      <CloseCircle size={24} color="#FF4D4F" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+                {errors[`location${index}`] && (
+                  <Text className="text-red-500 text-sm mt-1">
+                    {errors[`location${index}`]}
+                  </Text>
+                )}
               </View>
             ))}
           </View>
 
-          {errors.locations && (
-            <Text className="text-red-500 text-sm mb-4">
-              {errors.locations}
-            </Text>
-          )}
+          <View className="h-6" />
+        </ScrollView>
 
-          <View className="flex-row justify-between mt-auto">
+        <View className="py-4 border-t border-gray-200">
+          <View className="flex-row space-x-4">
             <TouchableOpacity
               onPress={handleNext}
-              className="w-full bg-black rounded-full py-4 mb-4"
+              className="flex-1 items-center justify-center h-[56px] rounded-full bg-black"
             >
-              <Text className="text-white text-center font-[Lato-Semibold] text-[16px]">
+              <Text className="text-center text-[16px] font-[Lato-Bold] text-white">
                 Next
               </Text>
             </TouchableOpacity>
