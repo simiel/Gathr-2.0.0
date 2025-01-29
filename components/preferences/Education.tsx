@@ -52,27 +52,6 @@ const Education: React.FC<EducationProps> = ({
 
   return (
     <View className="flex-1 pb-8">
-      {/* Header */}
-      <View className="flex-row mt-8 mb-4 gap-4 items-center">
-        <TouchableOpacity className="">
-          <ArrowLeft size={24} color="#000" />
-        </TouchableOpacity>
-        <View className="bg-[#FFEABE] h-[24px] px-[12px] items-center justify-center rounded-full">
-          <Text className="text-[16px] font-[Lato-Semibold] text-black">
-            1/4
-          </Text>
-        </View>
-        <View className="">
-          <Text className="text-black font-[Lato-Black] text-[20px]">
-            Your Education
-          </Text>
-        </View>
-        <TouchableOpacity className="ml-auto">
-          <Text className="text-black font-[Lato-Regular] text-[16px]">
-            Skip
-          </Text>
-        </TouchableOpacity>
-      </View>
       <View className="mb-6">
         <Text className="text-gray-700 mb-2">Secondary School</Text>
         <DropDownPicker
@@ -142,16 +121,12 @@ const Education: React.FC<EducationProps> = ({
 
       <View className="flex-row justify-between mt-6">
         <TouchableOpacity
-          onPress={onBack}
-          className="flex-1 mr-2 border border-gray-300 rounded-lg py-4"
-        >
-          <Text className="text-gray-600 text-center">Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
           onPress={handleNext}
-          className="flex-1 ml-2 bg-blue-500 rounded-lg py-4"
+          className="w-full bg-black rounded-full py-4 mb-4"
         >
-          <Text className="text-white text-center font-semibold">Next</Text>
+          <Text className="text-white text-center font-[Lato-Semibold] text-[16px]">
+            Next
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

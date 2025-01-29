@@ -68,16 +68,12 @@ const Industry: React.FC<IndustryProps> = ({
 
       <View className="flex-row justify-between">
         <TouchableOpacity
-          onPress={onBack}
-          className="flex-1 mr-2 border border-gray-300 rounded-lg py-4"
-        >
-          <Text className="text-gray-600 text-center">Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
           onPress={handleNext}
-          className="flex-1 ml-2 bg-blue-500 rounded-lg py-4"
+          className="w-full bg-black rounded-full py-4 mb-4"
         >
-          <Text className="text-white text-center font-semibold">Next</Text>
+          <Text className="text-white text-center font-[Lato-Semibold] text-[16px]">
+            Next
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

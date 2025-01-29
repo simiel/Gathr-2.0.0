@@ -95,10 +95,7 @@ export const onboardingSchema = z.object({
     .array(z.enum(INDUSTRY_OPTIONS))
     .min(3, "Please select at least 3 industries")
     .max(5, "You can select up to 5 industries"),
-  locations: z
-    .array(z.string())
-    .min(0)
-    .max(5, "You can add up to 5 locations"),
+  locations: z.array(z.string()).min(0).max(5, "You can add up to 5 locations"),
 });
 
 export type OnboardingFormData = z.infer<typeof onboardingSchema>;
@@ -108,6 +105,7 @@ interface StepConfig {
   title: string;
   description: string;
   animation: string;
+  bg?: string;
 }
 
 export const useOnboardingForm = () => {
@@ -122,6 +120,7 @@ export const useOnboardingForm = () => {
       description:
         "In order to get the best experience on Gathr. We would like to know a little bit more about you.",
       animation: require("@/assets/animation/welcome.json"),
+      bg: "#FFEABE",
     },
     {
       id: "education",
@@ -129,6 +128,7 @@ export const useOnboardingForm = () => {
       description:
         "Tell us a little about the schools you completed. We can help you find some mates here.",
       animation: require("@/assets/animation/education.json"),
+      bg: "#FFEABE",
     },
     {
       id: "faith",
@@ -136,6 +136,7 @@ export const useOnboardingForm = () => {
       description:
         "Tell us a little about your faith. We can help you find family and friends of the same faith here",
       animation: require("@/assets/animation/faith.json"),
+      bg: "#EEE6FF",
     },
     {
       id: "industry",
@@ -143,6 +144,7 @@ export const useOnboardingForm = () => {
       description:
         "We can help you find gatherings that are of the same industry as you.",
       animation: require("@/assets/animation/industry.json"),
+      bg: "#FDE3EB",
     },
     {
       id: "location",
@@ -150,6 +152,7 @@ export const useOnboardingForm = () => {
       description:
         "With gathr you can get to talk with the friend or family in your neighborhood about important matters ",
       animation: require("@/assets/animation/location.json"),
+      bg: "#DEF8FF",
     },
   ];
 

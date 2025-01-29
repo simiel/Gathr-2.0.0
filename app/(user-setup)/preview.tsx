@@ -92,8 +92,9 @@ const WelcomeScreen = () => {
       >
         {currentStep > 0 && (
           <>
+            {/* Header */}
             <View className="flex-row mt-8 mb-4 gap-4 items-center">
-              <TouchableOpacity className="">
+              <TouchableOpacity className="" onPress={prevStep}>
                 <ArrowLeft size={24} color="#000" />
               </TouchableOpacity>
               <View className="bg-[#FFEABE] h-[24px] px-[12px] items-center justify-center rounded-full">
@@ -103,16 +104,19 @@ const WelcomeScreen = () => {
               </View>
               <View className="">
                 <Text className="text-black font-[Lato-Black] text-[20px]">
-                  Your Education
+                  {step.title}
                 </Text>
               </View>
-              <TouchableOpacity className="ml-auto">
+              <TouchableOpacity className="ml-auto" onPress={skipPreferences}>
                 <Text className="text-black font-[Lato-Regular] text-[16px]">
                   Skip
                 </Text>
               </TouchableOpacity>
             </View>
-            <View className="h-40 w-full items-center justify-center ">
+
+            <View
+              className={`h-40 w-full items-center justify-center bg-[${step.bg}] rounded-[20px]`}
+            >
               <LottieView
                 source={step.animation}
                 autoPlay
@@ -121,11 +125,7 @@ const WelcomeScreen = () => {
               />
             </View>
 
-            <Text className="text-2xl font-bold text-center mt-4 mb-2">
-              {step.title}
-            </Text>
-
-            <Text className="text-gray-600 text-center mb-6">
+            <Text className="text-[#A6A6A7] text-[16px] font-[Lato-Regular] text-center mb-6">
               {step.description}
             </Text>
           </>

@@ -9,7 +9,6 @@ import {
   ScrollView,
   Keyboard,
   TouchableWithoutFeedback,
-  StyleSheet,
   Alert,
   ActivityIndicator,
   SafeAreaView,
