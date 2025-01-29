@@ -115,13 +115,17 @@ const WelcomeScreen = () => {
             </View>
 
             <View
-              className={`h-40 w-full items-center justify-center bg-[${step.bg}] rounded-[20px]`}
+              className={`h-40 w-full items-center justify-center rounded-[20px] overflow-hidden`}
             >
               <LottieView
                 source={step.animation}
                 autoPlay
                 loop
-                style={{ width: "100%", height: "100%" }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: step.bg,
+                }}
               />
             </View>
 
