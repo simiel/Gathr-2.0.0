@@ -37,14 +37,14 @@ const Industry: React.FC<IndustryProps> = ({
   return (
     <View className="flex-1 pb-8">
       {/* <ScrollView className="flex-1 mb-6"> */}
-      <View className="flex-row flex-wrap">
+      <View className="flex-row flex-wrap mb-4">
         {INDUSTRY_OPTIONS.map((industry) => (
           <TouchableOpacity
             key={industry}
             onPress={() => toggleIndustry(industry)}
             className={`m-1 px-4 py-2 rounded-full border ${
               selectedIndustries.includes(industry)
-                ? "bg-blue-500 border-blue-500"
+                ? "bg-black border-black"
                 : "border-gray-300"
             }`}
           >

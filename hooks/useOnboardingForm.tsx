@@ -93,8 +93,14 @@ export const onboardingSchema = z.object({
   }),
   industry: z
     .array(z.enum(INDUSTRY_OPTIONS))
-    .min(3, "Please select at least 3 industries")
-    .max(5, "You can select up to 5 industries"),
+    .refine((val) => val.length >= 3, {
+      message: "Please select at least 3 industries",
+      path: ["industry"], // Explicitly set the path for error
+    })
+    .refine((val) => val.length <= 5, {
+      message: "You can select up to 5 industries",
+      path: ["industry"], // Explicitly set the path for error
+    }),
   locations: z.array(z.string()).min(0).max(5, "You can add up to 5 locations"),
 });
 
@@ -143,7 +149,7 @@ export const useOnboardingForm = () => {
       title: "Professional Interests",
       description:
         "We can help you find gatherings that are of the same industry as you.",
-      animation: require("@/assets/animation/industry.json"),
+      animation: require("@/assets/animation/sports.json"),
       bg: "#FDE3EB",
     },
     {
@@ -200,10 +206,13 @@ export const useOnboardingForm = () => {
           ...prev,
           [stepId]: data,
         }));
+        console.log(errors);
         return true;
       }
+      console.log(errors);
       return false;
     } catch (error) {
+      console.log(errors);
       console.error("Error updating form data:", error);
       return false;
     }
