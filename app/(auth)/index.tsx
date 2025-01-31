@@ -84,9 +84,13 @@ const SignInScreen = () => {
           },
         });
       } catch (err: any) {
+        console.log("🚀 ~ onSubmit ~ err:", err.errors[0]);
         // If sign up fails, try to sign in
         console.log("Sign up failed, trying sign in");
-        if (err.errors?.[0]?.code === "identifier_not_found") {
+        if (
+          err.errors?.[0]?.code === "identifier_not_found" ||
+          "form_identifier_exists"
+        ) {
           try {
             if (!signIn) {
               Alert.alert("Error", "Sign-in service is unavailable.");
@@ -112,31 +116,37 @@ const SignInScreen = () => {
   };
 
   const trySignIn = async () => {
-    console.log("trySignIn", phoneNumber);
+    try {
+      console.log("trySignIn", phoneNumber);
 
-    const { supportedFirstFactors } = await signIn!.create({
-      identifier: phoneNumber,
-    });
+      const { supportedFirstFactors } = await signIn!.create({
+        identifier: phoneNumber,
+      });
 
-    const firstPhoneFactor: any = supportedFirstFactors!.find((factor: any) => {
-      return factor.strategy === "phone_code";
-    });
+      const firstPhoneFactor: any = supportedFirstFactors!.find(
+        (factor: any) => {
+          return factor.strategy === "phone_code";
+        }
+      );
 
-    const { phoneNumberId } = firstPhoneFactor;
+      const { phoneNumberId } = firstPhoneFactor;
 
-    const signInRespone = await signIn!.prepareFirstFactor({
-      strategy: "phone_code",
-      phoneNumberId,
-    });
+      const signInResponse = await signIn!.prepareFirstFactor({
+        strategy: "phone_code",
+        phoneNumberId,
+      });
 
-    router.replace({
-      pathname: "/(auth)/otp",
-      params: {
-        phoneNumber: phoneNumber,
-        signInId: signInRespone.id,
-      },
-    });
-    setIsLoading(false);
+      router.replace({
+        pathname: "/(auth)/otp",
+        params: {
+          phoneNumber: phoneNumber,
+          signInId: signInResponse.id,
+        },
+      });
+      setIsLoading(false);
+    } catch (error) {
+      console.log("🚀 ~ trySignIn ~ error:", error);
+    }
   };
 
   if (!isSignInLoaded || !isSignUpLoaded) {

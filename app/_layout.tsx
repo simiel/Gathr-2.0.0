@@ -85,7 +85,7 @@ function RootLayoutNav() {
     };
 
     checkAuthAndRoute();
-  }, [isLoaded, isSignedIn]);
+  }, [isLoaded, mounted]);
 
   if (!isLoaded) {
     return null;

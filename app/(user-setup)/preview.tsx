@@ -65,7 +65,7 @@ const WelcomeScreen = () => {
     if (isFormValid) {
       // Navigate to the next screen
       console.log("submit");
-      router.navigate({
+      router.replace({
         pathname: "/(main)",
         params: {},
       });
@@ -233,7 +233,6 @@ const WelcomeScreen = () => {
       {showOnboarding && (
         <BottomSheet
           ref={bottomSheetRef}
-          //   snapPoints={[200]}
           enableDynamicSizing
           backdropComponent={renderBackdrop}
           enablePanDownToClose={false}
