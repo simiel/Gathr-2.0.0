@@ -54,7 +54,6 @@ function RootLayoutNav() {
 
   useEffect(() => {
     setMounted(true);
-    signOut();
   }, []);
 
   useEffect(() => {
