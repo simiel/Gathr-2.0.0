@@ -2,7 +2,7 @@ import "react-native-get-random-values";
 import { Slot, Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
 import "./global.css";
 import * as Sentry from "@sentry/react-native";
@@ -13,6 +13,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import Constants from "expo-constants";
+import { tokenCache } from "@/utils/clerk";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,7 +26,6 @@ Sentry.init({
 
 export default function RootLayout() {
   const { isReady, error } = useAppBootstrap(AppAssets);
-  const router = useRouter();
 
   useEffect(() => {
     if (isReady || error) {
@@ -40,6 +40,7 @@ export default function RootLayout() {
   return (
     <ClerkProvider
       publishableKey={Constants.expoConfig?.extra?.CLERK_PUBLISHABLE_KEY}
+      tokenCache={tokenCache}
     >
       <RootLayoutNav />
     </ClerkProvider>
@@ -49,9 +50,14 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const { isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (!isLoaded) return;
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isLoaded || !mounted) return;
 
     const checkAuthAndRoute = async () => {
       try {
@@ -65,7 +71,7 @@ function RootLayoutNav() {
             await AsyncStorage.setItem("hasLaunched", "true");
           } else {
             // Not first launch - show get started
-            router.replace("/(user-setup)/preview");
+            router.replace("/(onboarding)");
           }
         } else {
           // User is authenticated - redirect to main app

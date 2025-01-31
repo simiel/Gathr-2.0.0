@@ -13,6 +13,8 @@ export default function TabLayout() {
 
   useEffect(() => {
     if (!isSignedIn) {
+      console.log("🚀 ~ useEffect ~ isSignedIn:", isSignedIn);
+
       // If user is not signed in, redirect to auth
       router.replace("/(onboarding)/get-started");
     }

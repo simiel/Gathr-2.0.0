@@ -50,7 +50,7 @@ const SignInScreen = () => {
   };
 
   const phone = parsePhoneNumber(`${callingCode}${phoneNumber}`);
-  const isNumberValid = phoneNumber?.length > 0 && phone?.isValid();
+  const isNumberValid = phone?.isValid();
 
   const onSubmit = async (data: { phoneNumber: string }) => {
     try {
@@ -59,10 +59,10 @@ const SignInScreen = () => {
       console.log("🚀 ~ onSubmit ~ data:", fullPhoneNumber);
       const parsedNumber = parsePhoneNumber(fullPhoneNumber);
 
-      if (!parsedNumber?.isValid()) {
-        Alert.alert("Error", "Please enter a valid phone number");
-        return;
-      }
+      // if (!parsedNumber?.isValid()) {
+      //   Alert.alert("Error", "Please enter a valid phone number");
+      //   return;
+      // }
 
       // First try to sign in
       try {
@@ -80,11 +80,12 @@ const SignInScreen = () => {
           pathname: "/(auth)/otp",
           params: {
             phoneNumber: fullPhoneNumber,
-            signInId: signUpResponse.id,
+            signUpId: signUpResponse.id,
           },
         });
       } catch (err: any) {
         // If sign up fails, try to sign in
+        console.log("Sign up failed, trying sign in");
         if (err.errors?.[0]?.code === "identifier_not_found") {
           try {
             if (!signIn) {
@@ -123,12 +124,18 @@ const SignInScreen = () => {
 
     const { phoneNumberId } = firstPhoneFactor;
 
-    await signIn!.prepareFirstFactor({
+    const signInRespone = await signIn!.prepareFirstFactor({
       strategy: "phone_code",
       phoneNumberId,
     });
 
-    router.replace(`/otp?phoneNumber=${phoneNumber}`, {});
+    router.replace({
+      pathname: "/(auth)/otp",
+      params: {
+        phoneNumber: phoneNumber,
+        signInId: signInRespone.id,
+      },
+    });
     setIsLoading(false);
   };
 

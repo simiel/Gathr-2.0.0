@@ -33,6 +33,8 @@ const OTPScreen = () => {
     signUpId?: string;
   }>();
 
+  console.log("🚀 ~ OTPScreen ~ params:", params);
+
   const { signIn, setActive } = useSignIn();
   const { signUp } = useSignUp();
   const [code, setCode] = useState("");
@@ -57,18 +59,8 @@ const OTPScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (code.length === 6) {
-      console.log("verify", code);
-
-      if (!params.signInId) {
-        console.log("🚀 ~ useEffect ~ params.signInId:", params.signInId);
-        console.log("signin");
-        veryifySignIn();
-        console.log("🚀 ~ signin done here");
-      } else {
-        verifyCode();
-        console.log("🚀 ~ signin done here");
-      }
+    if (code.length === CELL_COUNT) {
+      handleVerification();
     }
   }, [code]);
 
@@ -85,69 +77,75 @@ const OTPScreen = () => {
     }, 1000);
   };
 
-  const verifyCode = async () => {
+  const handleVerification = async () => {
+    setLoading(true);
     try {
-      await signUp!.attemptPhoneNumberVerification({
-        code,
-      });
-
-      await setActive!({ session: signUp!.createdSessionId });
-      router.replace("/(user-setup)");
+      if (params.signInId) {
+        await veryifySignIn();
+      } else if (params.signUpId) {
+        await verifyCode();
+      } else {
+        Alert.alert("Error", "Invalid verification flow");
+      }
     } catch (err) {
-      console.log("error", JSON.stringify(err, null, 2));
+      console.error("Verification error:", err);
       if (isClerkAPIResponseError(err)) {
         Alert.alert("Error", err.errors[0].message);
       }
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const verifyCode = async () => {
+    const result = await signUp!.attemptPhoneNumberVerification({ code });
+    console.log(
+      "🚀 ~ verifyCode ~ signUpVerificarionResponse:",
+      result.status,
+      result.requiredFields,
+      result.missingFields
+    );
+    await setActive!({ session: signUp!.createdSessionId });
+    router.replace("/(user-setup)");
   };
 
   const veryifySignIn = async () => {
-    try {
-      await signIn!.attemptFirstFactor({
-        strategy: "phone_code",
-        code,
-      });
-
-      await setActive!({ session: signIn!.createdSessionId });
-      router.replace("/(user-setup)");
-    } catch (err) {
-      console.log("error", JSON.stringify(err, null, 2));
-      if (isClerkAPIResponseError(err)) {
-        Alert.alert("Error", err.errors[0].message);
-      }
-    }
+    await signIn!.attemptFirstFactor({
+      strategy: "phone_code",
+      code,
+    });
+    await setActive!({ session: signIn!.createdSessionId });
+    router.replace("/(user-setup)");
   };
 
   const resendCode = async () => {
+    setIsResending(true);
     try {
-      if (!params.signInId) {
+      if (params.signInId) {
         const { supportedFirstFactors } = await signIn!.create({
           identifier: params.phoneNumber,
         });
-
         const firstPhoneFactor: any = supportedFirstFactors!.find(
-          (factor: any) => {
-            return factor.strategy === "phone_code";
-          }
+          (factor: any) => factor.strategy === "phone_code"
         );
-
         const { phoneNumberId } = firstPhoneFactor;
-
         await signIn!.prepareFirstFactor({
           strategy: "phone_code",
           phoneNumberId,
         });
-      } else {
-        await signUp!.create({
-          phoneNumber: params.phoneNumber,
-        });
-        signUp!.preparePhoneNumberVerification();
+      } else if (params.signUpId) {
+        await signUp!.create({ phoneNumber: params.phoneNumber });
+        await signUp!.preparePhoneNumberVerification();
       }
+      startTimer(); // Reset the timer
+      Alert.alert("Success", "Verification code resent.");
     } catch (err) {
-      console.log("error", JSON.stringify(err, null, 2));
+      console.error("Resend error:", err);
       if (isClerkAPIResponseError(err)) {
         Alert.alert("Error", err.errors[0].message);
       }
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -206,7 +204,7 @@ const OTPScreen = () => {
             </View>
           </View>
 
-          <View className="flex-1">
+          <View className="flex-1 justify-center flex-row">
             <Text className="text-[16px] font-[Lato-Medium] text-[#B2B3B3]">
               Didn't receive the code?{" "}
             </Text>
