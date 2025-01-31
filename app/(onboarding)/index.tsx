@@ -112,7 +112,7 @@ const Onboarding = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View style={styles.container}>
+      <View style={{ width: SCREEN_WIDTH }} className="flex-1 pb-8">
         <Animated.FlatList
           ref={flatListRef as any}
           data={OnboardingData}

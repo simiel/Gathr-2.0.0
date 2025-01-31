@@ -90,10 +90,7 @@ export default function SlideControlButton({
   };
 
   return (
-    <Pressable
-      onPress={handlePress}
-      className="flex-row justify-between items-center mt-5 w-full px-5"
-    >
+    <View className="flex-row justify-between items-center w-full">
       {/* Skip Button */}
       <Pressable
         onPress={() => {
@@ -159,6 +156,6 @@ export default function SlideControlButton({
           </Pressable>
         </Animated.View>
       </AnimatedPressable>
-    </Pressable>
+    </View>
   );
 }

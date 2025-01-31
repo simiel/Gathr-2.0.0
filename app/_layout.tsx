@@ -48,12 +48,13 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn, signOut } = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    signOut();
   }, []);
 
   useEffect(() => {
