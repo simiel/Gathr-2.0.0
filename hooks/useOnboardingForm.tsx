@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { z } from "zod";
+import { useRouter } from "expo-router";
 
 // Constants for form options
 export const GHANA_UNIVERSITIES = [
@@ -118,6 +119,7 @@ export const useOnboardingForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Partial<OnboardingFormData>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const router = useRouter();
 
   const steps: StepConfig[] = [
     {
@@ -149,7 +151,7 @@ export const useOnboardingForm = () => {
       title: "Professional Interests",
       description:
         "We can help you find gatherings that are of the same industry as you.",
-      animation: require("@/assets/animation/sports.json"),
+      animation: require("@/assets/animation/industry.json"),
       bg: "#FDE3EB",
     },
     {
@@ -219,7 +221,10 @@ export const useOnboardingForm = () => {
   };
 
   const skipOnboarding = () => {
-    // Handle skipping logic here
+    router.replace({
+      pathname: "/(main)",
+      params: {},
+    });
     return true;
   };
 

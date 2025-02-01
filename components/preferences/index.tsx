@@ -12,14 +12,84 @@ const Intro: React.FC<IntroProps> = ({ onNext, onSkip }) => {
   return (
     <View className="flex-1 pb-8">
       <View>
-        {/* <View className="h-40 w-full items-center justify-center ">
-          <LottieView
-                    source={step.animation}
-                    autoPlay
-                    loop
-                    style={{ width: "100%", height: "100%" }}
-                  />
-        </View> */}
+        <Swiper
+          autoplay
+          loop
+          loadMinimal
+          containerStyle={{
+            backgroundColor: "#FFEABE",
+            borderRadius: 20,
+            width: "100%",
+            marginBottom: 12,
+            height: 180,
+          }}
+          // style={styles.swiper}
+          style={{
+            height: 200,
+          }}
+          showsButtons={false}
+        >
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <LottieView
+              style={{
+                width: "100%",
+                height: 120,
+                borderRadius: 20,
+                marginBottom: 30,
+              }}
+              source={require("@/assets/animation/education.json")}
+              autoPlay
+              loop
+            />
+          </View>
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <LottieView
+              style={{
+                width: "100%",
+                height: 120,
+                borderRadius: 20,
+                marginBottom: 30,
+              }}
+              source={require("@/assets/animation/faith.json")}
+              autoPlay
+              loop
+            />
+          </View>
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <LottieView
+              style={{
+                width: "100%",
+                height: 120,
+                borderRadius: 20,
+                marginBottom: 30,
+              }}
+              source={require("@/assets/animation/industry.json")}
+              autoPlay
+              loop
+            />
+          </View>
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <LottieView
+              style={{
+                width: "100%",
+                height: 150,
+                borderRadius: 20,
+                marginBottom: 30,
+              }}
+              source={require("@/assets/animation/location.json")}
+              autoPlay
+              loop
+            />
+          </View>
+        </Swiper>
 
         <Text className="text-2xl font-bold text-center mt-4 mb-2">
           Personalize your experience

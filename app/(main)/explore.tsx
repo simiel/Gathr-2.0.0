@@ -6,14 +6,12 @@ const explore = () => {
   const { signOut } = useAuth();
   return (
     <View className="flex-1 justify-center items-center">
-      <Text>explore</Text>
-
       <TouchableOpacity
         onPress={() => {
           signOut();
         }}
       >
-        <Text>jkfekj</Text>
+        <Text>LOGOUT</Text>
       </TouchableOpacity>
     </View>
   );

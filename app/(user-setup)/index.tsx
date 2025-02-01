@@ -57,9 +57,9 @@ const ProfileSetup = () => {
     watch,
   } = useForm({
     defaultValues: {
-      firstName: "Samuel",
-      lastName: "Mensah",
-      userName: "smensah",
+      firstName: "",
+      lastName: "",
+      userName: "",
       profileImage: "",
     },
     mode: "onChange",
@@ -83,7 +83,7 @@ const ProfileSetup = () => {
     router.setParams({ user: JSON.stringify(user) });
 
     // Navigate to the next screen
-    router.navigate({
+    router.replace({
       pathname: "/(user-setup)/preview",
       params: {
         firstName: firstName,

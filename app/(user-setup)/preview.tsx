@@ -74,7 +74,7 @@ const WelcomeScreen = () => {
 
   const skipPreferences = () => {
     // Navigate to the next screen
-    router.navigate({
+    router.replace({
       pathname: "/(main)",
       params: {},
     });

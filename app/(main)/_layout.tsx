@@ -5,6 +5,7 @@ import { useAuth } from "@clerk/clerk-expo";
 
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { Message, Messages2, ProfileCircle } from "iconsax-react-native";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -25,6 +26,7 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
+        tabBarShowLabel: false,
         tabBarStyle: Platform.select({
           ios: {
             position: "absolute",
@@ -36,13 +38,19 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Chat",
+          tabBarIcon: ({ color, size }) => (
+            <Message size={size} color={color} variant="Bold" />
+          ),
+          title: "",
         }}
       />
       <Tabs.Screen
         name="explore"
         options={{
-          title: "Explore",
+          tabBarIcon: ({ color, size }) => (
+            <ProfileCircle size={size} color={color} variant="Bold" />
+          ),
+          tabBarShowLabel: false,
         }}
       />
     </Tabs>

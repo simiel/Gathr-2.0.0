@@ -87,10 +87,7 @@ const SignInScreen = () => {
         console.log("🚀 ~ onSubmit ~ err:", err.errors[0]);
         // If sign up fails, try to sign in
         console.log("Sign up failed, trying sign in");
-        if (
-          err.errors?.[0]?.code === "identifier_not_found" ||
-          "form_identifier_exists"
-        ) {
+        if (err.errors?.[0]?.code) {
           try {
             if (!signIn) {
               Alert.alert("Error", "Sign-in service is unavailable.");
@@ -229,7 +226,7 @@ const SignInScreen = () => {
                           value={value}
                           onChangeText={onChange}
                           keyboardType="phone-pad"
-                          className="flex-1 text-[16px]"
+                          className="flex-1 text-[16px] min-h-[40px] "
                           onBlur={onBlur}
                         />
                       )}
