@@ -21,6 +21,7 @@ import {
   isClerkAPIResponseError,
   useSignIn,
   useSignUp,
+  useAuth,
 } from "@clerk/clerk-expo";
 
 const CELL_COUNT = 6;
@@ -37,6 +38,7 @@ const OTPScreen = () => {
 
   const { signIn, setActive } = useSignIn();
   const { signUp } = useSignUp();
+  const { getToken } = useAuth();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(RESEND_COOLDOWN);
@@ -75,6 +77,15 @@ const OTPScreen = () => {
         return prev - 1;
       });
     }, 1000);
+  };
+
+  const signIntoFirebase = async () => {
+    const token = await getToken({ template: "integration_firebase" });
+
+    // const userCredentials = await signInWithCustomToken(auth, token || '')
+    // The userCredentials.user object can call the methods of
+    // the Firebase platform as an authenticated user.
+    // console.log('User:', userCredentials.user)
   };
 
   const handleVerification = async () => {
