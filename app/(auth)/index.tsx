@@ -43,14 +43,13 @@ const SignInScreen = () => {
     watch,
   } = useForm<FormData>();
   const phoneNumber = watch("phoneNumber");
+  const phone = parsePhoneNumber(`${callingCode}${phoneNumber}`);
+  const isNumberValid = phone?.isValid();
 
   const handleCountrySelect = (country: Country) => {
     setCountryCode(country.cca2);
     setCallingCode(`+${country.callingCode[0]}`);
   };
-
-  const phone = parsePhoneNumber(`${callingCode}${phoneNumber}`);
-  const isNumberValid = phone?.isValid();
 
   const onSubmit = async (data: { phoneNumber: string }) => {
     try {
@@ -113,11 +112,12 @@ const SignInScreen = () => {
   };
 
   const trySignIn = async () => {
+    const fullPhoneNumber = phone?.number!;
     try {
-      console.log("trySignIn", phoneNumber);
+      console.log("trySignIn", fullPhoneNumber);
 
       const { supportedFirstFactors } = await signIn!.create({
-        identifier: phoneNumber,
+        identifier: fullPhoneNumber,
       });
 
       const firstPhoneFactor: any = supportedFirstFactors!.find(
@@ -136,13 +136,13 @@ const SignInScreen = () => {
       router.replace({
         pathname: "/(auth)/otp",
         params: {
-          phoneNumber: phoneNumber,
+          phoneNumber: fullPhoneNumber,
           signInId: signInResponse.id,
         },
       });
       setIsLoading(false);
-    } catch (error) {
-      console.log("🚀 ~ trySignIn ~ error:", error);
+    } catch (error: any) {
+      console.log("🚀 ~ trySignIn ~ error:", error.errors[0]);
     }
   };
 
