@@ -42,7 +42,7 @@ const Industry: React.FC<IndustryProps> = ({
           <TouchableOpacity
             key={industry}
             onPress={() => toggleIndustry(industry)}
-            className={`m-1 px-4 py-2 rounded-full border ${
+            className={`m-2 px-4 py-2 rounded-full border ${
               selectedIndustries.includes(industry)
                 ? "bg-black border-black"
                 : "border-gray-300"
@@ -51,8 +51,8 @@ const Industry: React.FC<IndustryProps> = ({
             <Text
               className={
                 selectedIndustries.includes(industry)
-                  ? "text-white"
-                  : "text-gray-600"
+                  ? "text-white font-[Lato-Regular]"
+                  : "text-gray-600 font-[Lato-Regular]"
               }
             >
               {industry}
@@ -69,7 +69,7 @@ const Industry: React.FC<IndustryProps> = ({
       <View className="flex-row justify-between">
         <TouchableOpacity
           onPress={handleNext}
-          className="w-full bg-black rounded-full py-4 mb-4"
+          className="w-full bg-black rounded-full py-5 mb-4"
         >
           <Text className="text-white text-center font-[Lato-Semibold] text-[16px]">
             Next

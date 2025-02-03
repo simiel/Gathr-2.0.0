@@ -10,7 +10,6 @@ import LottieView from "lottie-react-native";
 import { useOnboardingForm } from "@/hooks/useOnboardingForm";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Intro from "@/components/preferences";
 import Education from "@/components/preferences/Education";
 import Faith from "@/components/preferences/Faith";
@@ -88,7 +87,7 @@ const WelcomeScreen = () => {
       <Animated.View
         entering={FadeInRight}
         exiting={FadeOutLeft}
-        className="flex-1 px-2"
+        className="flex-1 px-2 gap-6"
       >
         {currentStep > 0 && (
           <>

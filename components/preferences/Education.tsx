@@ -53,7 +53,9 @@ const Education: React.FC<EducationProps> = ({
   return (
     <View className="flex-1 pb-8">
       <View className="mb-6">
-        <Text className="text-gray-700 mb-2">Secondary School</Text>
+        <Text className="text-[#0D0D0E] font-[Lato-Regular] text-[16px] mb-2">
+          Secondary School
+        </Text>
         <DropDownPicker
           open={openField === "school"}
           value={school}
@@ -64,15 +66,30 @@ const Education: React.FC<EducationProps> = ({
           placeholder="Select Secondary School"
           dropDownDirection="TOP"
           style={{
-            borderColor: errors.secondarySchool ? "#EF4444" : "#E5E7EB",
+            borderColor: errors.secondarySchool
+              ? "#EF4444"
+              : openField == "school"
+              ? "black"
+              : "#A0A1A1",
             borderRadius: 8,
+          }}
+          placeholderStyle={{
+            color: "#A0A1A1",
+            fontFamily: "Lato-Regular",
           }}
           textStyle={{
             fontSize: 16,
+            fontFamily: "Lato-Regular",
+            color: "white",
           }}
           dropDownContainerStyle={{
             borderColor: "#E5E7EB",
-            borderRadius: 8,
+            borderRadius: 20,
+            backgroundColor: "#2E2E2F",
+          }}
+          labelStyle={{
+            color: "#A0A1A1",
+            fontFamily: "Lato-Regular",
           }}
           listMode="SCROLLVIEW"
           scrollViewProps={{
@@ -82,14 +99,16 @@ const Education: React.FC<EducationProps> = ({
           zIndexInverse={1000}
         />
         {errors.secondarySchool && (
-          <Text className="text-red-500 text-sm mt-1">
+          <Text className="text-red-500 text-sm mt-1 font-[Lato-Regular]">
             {errors.secondarySchool}
           </Text>
         )}
       </View>
 
       <View className="mb-6">
-        <Text className="text-gray-700 mb-2">University (Optional)</Text>
+        <Text className="text-[#0D0D0E] font-[Lato-Regular] text-[16px] mb-2">
+          University institution (Optional)
+        </Text>
         <DropDownPicker
           open={openField === "university"}
           value={university}
@@ -100,15 +119,26 @@ const Education: React.FC<EducationProps> = ({
           placeholder="Select University"
           dropDownDirection="TOP"
           style={{
-            borderColor: "#E5E7EB",
+            borderColor: openField == "university" ? "black" : "#A0A1A1",
             borderRadius: 8,
+          }}
+          placeholderStyle={{
+            color: "#A0A1A1",
+            fontFamily: "Lato-Regular",
           }}
           textStyle={{
             fontSize: 16,
+            color: "white",
+            fontFamily: "Lato-Regular",
           }}
           dropDownContainerStyle={{
-            borderColor: "#E5E7EB",
-            borderRadius: 8,
+            borderColor: "#A0A1A1",
+            borderRadius: 20,
+            backgroundColor: "#2E2E2F",
+          }}
+          labelStyle={{
+            color: "#A0A1A1",
+            fontFamily: "Lato-Regular",
           }}
           listMode="SCROLLVIEW"
           scrollViewProps={{
@@ -119,12 +149,12 @@ const Education: React.FC<EducationProps> = ({
         />
       </View>
 
-      <View className="flex-row justify-between mt-6">
+      <View className="flex-row justify-between mt-16">
         <TouchableOpacity
           onPress={handleNext}
-          className="w-full bg-black rounded-full py-4 mb-4"
+          className="w-full bg-black rounded-full py-5 mb-4"
         >
-          <Text className="text-white text-center font-[Lato-Semibold] text-[16px]">
+          <Text className="text-white text-center leading-6 font-[Lato-Semibold] text-[16px]">
             Next
           </Text>
         </TouchableOpacity>

@@ -10,7 +10,11 @@ import {
   Alert,
 } from "react-native";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
-import { Location as LocationIcon, CloseCircle } from "iconsax-react-native";
+import {
+  Location as LocationIcon,
+  CloseCircle,
+  Trash,
+} from "iconsax-react-native";
 
 interface LocationProps {
   data?: string[];
@@ -97,17 +101,20 @@ const Location: React.FC<LocationProps> = ({
                 <View className="flex-row items-center">
                   <View className="flex-1 relative">
                     <BottomSheetTextInput
-                      className={`bg-gray-100 rounded-lg h-[48px] px-4 py-3 pr-12 font-[Lato-Regular] ${
-                        focusedIndex === index ? "border border-blue-500" : ""
+                      className={`rounded-[12px] h-[48px] p-4 pr-12 font-[Lato-Regular] ${
+                        focusedIndex === index
+                          ? "border border-black"
+                          : "border border-[#868685]"
                       }`}
                       placeholder="Enter location"
                       value={location}
                       onChangeText={(text) => handleLocationChange(text, index)}
                       onFocus={() => setFocusedIndex(index)}
                       onBlur={() => setFocusedIndex(null)}
+                      placeholderClassName="text-[#868685] font-[Lato-Regular]"
                     />
                     <View className="absolute right-3 top-3">
-                      <LocationIcon size={24} color="#666" />
+                      <LocationIcon size={24} color="black" />
                     </View>
                   </View>
                   {(locations.length > 1 || location !== "") && (
@@ -115,7 +122,7 @@ const Location: React.FC<LocationProps> = ({
                       onPress={() => removeLocation(index)}
                       className="ml-2 p-2"
                     >
-                      <CloseCircle size={24} color="#FF4D4F" />
+                      <Trash size={24} color="#FF4D4F" />
                     </TouchableOpacity>
                   )}
                 </View>
@@ -135,7 +142,7 @@ const Location: React.FC<LocationProps> = ({
           <View className="flex-row space-x-4">
             <TouchableOpacity
               onPress={handleNext}
-              className="flex-1 items-center justify-center h-[56px] rounded-full bg-black"
+              className="py-5 flex-1 items-center justify-center rounded-full bg-black"
             >
               <Text className="text-center text-[16px] font-[Lato-Bold] text-white">
                 Next

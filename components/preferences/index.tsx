@@ -91,7 +91,7 @@ const Intro: React.FC<IntroProps> = ({ onNext, onSkip }) => {
           </View>
         </Swiper>
 
-        <Text className="text-2xl font-bold text-center mt-4 mb-2">
+        <Text className="text-2xl font-bold text-center mt-2 mb-2">
           Personalize your experience
         </Text>
 
@@ -100,10 +100,10 @@ const Intro: React.FC<IntroProps> = ({ onNext, onSkip }) => {
           little bit more about you.
         </Text>
       </View>
-      <View className="flex-1 items-center justify-center">
+      <View className="flex-1 items-center justify-center mt-20">
         <TouchableOpacity
           onPress={onNext}
-          className="w-full bg-black rounded-full py-4 mb-4"
+          className="w-full bg-black rounded-full py-5 mb-4"
         >
           <Text className="text-white text-center font-[Lato-Semibold] text-[16px]">
             Proceed
@@ -112,7 +112,7 @@ const Intro: React.FC<IntroProps> = ({ onNext, onSkip }) => {
 
         <TouchableOpacity
           onPress={onSkip}
-          className="w-full border border-gray-300 rounded-full py-4"
+          className="w-full border border-gray-300 rounded-full py-5"
         >
           <Text className="text-black text-center font-[Lato-Semibold] text-[16px]">
             Skip

@@ -56,7 +56,9 @@ const Faith: React.FC<FaithProps> = ({
   return (
     <View className="flex-1 pb-8">
       <View className="mb-6">
-        <Text className="text-gray-700 mb-2">Faith</Text>
+        <Text className="text-[#0D0D0E] font-[Lato-Regular] text-[16px] mb-2">
+          Faith
+        </Text>
         <DropDownPicker
           open={openField === "religion"}
           value={religion}
@@ -69,15 +71,30 @@ const Faith: React.FC<FaithProps> = ({
           }}
           placeholder="Select Faith"
           style={{
-            borderColor: errors.religion ? "#EF4444" : "#E5E7EB",
+            borderColor: errors.religion
+              ? "#EF4444"
+              : openField == "religion"
+              ? "black"
+              : "#A0A1A1",
             borderRadius: 8,
           }}
           textStyle={{
             fontSize: 16,
+            color: "white",
+            fontFamily: "Lato-Regular",
           }}
           dropDownContainerStyle={{
-            borderColor: "#E5E7EB",
-            borderRadius: 8,
+            borderColor: "#A0A1A1",
+            borderRadius: 20,
+            backgroundColor: "#2E2E2F",
+          }}
+          labelStyle={{
+            color: "#A0A1A1",
+            fontFamily: "Lato-Regular",
+          }}
+          placeholderStyle={{
+            color: "#A0A1A1",
+            fontFamily: "Lato-Regular",
           }}
           listMode="SCROLLVIEW"
           dropDownDirection="TOP"
@@ -94,7 +111,9 @@ const Faith: React.FC<FaithProps> = ({
 
       {religion && (
         <View className="mb-6">
-          <Text className="text-gray-700 mb-2">Denomination</Text>
+          <Text className="text-[#0D0D0E] font-[Lato-Regular] text-[16px] mb-2">
+            Denomination
+          </Text>
           <DropDownPicker
             open={openField === "denomination"}
             value={denomination}
@@ -104,18 +123,32 @@ const Faith: React.FC<FaithProps> = ({
             setValue={setDenomination}
             placeholder="Select Denomination"
             style={{
-              borderColor: "#E5E7EB",
+              borderColor: errors.denomination
+                ? "#EF4444"
+                : openField == "denomination"
+                ? "black"
+                : "#A0A1A1",
               borderRadius: 8,
             }}
             textStyle={{
               fontSize: 16,
+              color: "white",
+              fontFamily: "Lato-Regular",
+            }}
+            dropDownContainerStyle={{
+              borderColor: "#A0A1A1",
+              borderRadius: 20,
+              backgroundColor: "#2E2E2F",
+            }}
+            labelStyle={{
+              color: "#A0A1A1",
+              fontFamily: "Lato-Regular",
+            }}
+            placeholderStyle={{
+              color: "#A0A1A1",
+              fontFamily: "Lato-Regular",
             }}
             dropDownDirection="TOP"
-            dropDownContainerStyle={{
-              borderColor: "#E5E7EB",
-              borderRadius: 8,
-              zIndex: 4500,
-            }}
             listMode="SCROLLVIEW"
             scrollViewProps={{
               nestedScrollEnabled: true,
@@ -129,7 +162,7 @@ const Faith: React.FC<FaithProps> = ({
       <View className="flex-row justify-between mt-6">
         <TouchableOpacity
           onPress={handleNext}
-          className="w-full bg-black rounded-full py-4 mb-4"
+          className="w-full bg-black rounded-full py-5 mb-4"
         >
           <Text className="text-white text-center font-[Lato-Semibold] text-[16px]">
             Next
