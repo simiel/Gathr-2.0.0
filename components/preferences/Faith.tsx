@@ -76,7 +76,7 @@ const Faith: React.FC<FaithProps> = ({
               : openField == "religion"
               ? "black"
               : "#A0A1A1",
-            borderRadius: 8,
+            borderRadius: 12,
           }}
           textStyle={{
             fontSize: 16,
@@ -128,7 +128,7 @@ const Faith: React.FC<FaithProps> = ({
                 : openField == "denomination"
                 ? "black"
                 : "#A0A1A1",
-              borderRadius: 8,
+              borderRadius: 12,
             }}
             textStyle={{
               fontSize: 16,

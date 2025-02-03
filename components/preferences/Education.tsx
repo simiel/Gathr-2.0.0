@@ -71,7 +71,7 @@ const Education: React.FC<EducationProps> = ({
               : openField == "school"
               ? "black"
               : "#A0A1A1",
-            borderRadius: 8,
+            borderRadius: 12,
           }}
           placeholderStyle={{
             color: "#A0A1A1",
@@ -120,7 +120,7 @@ const Education: React.FC<EducationProps> = ({
           dropDownDirection="TOP"
           style={{
             borderColor: openField == "university" ? "black" : "#A0A1A1",
-            borderRadius: 8,
+            borderRadius: 12,
           }}
           placeholderStyle={{
             color: "#A0A1A1",
