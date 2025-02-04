@@ -44,6 +44,9 @@ const OTPScreen = () => {
   const [timer, setTimer] = useState(RESEND_COOLDOWN);
   const [isResending, setIsResending] = useState(false);
   const timerRef = useRef<NodeJS.Timeout>();
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null
+  );
 
   const ref = useBlurOnFulfill({ value: code, cellCount: CELL_COUNT });
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
@@ -90,6 +93,7 @@ const OTPScreen = () => {
 
   const handleVerification = async () => {
     setLoading(true);
+    setVerificationError(null);
     try {
       if (params.signInId) {
         await veryifySignIn();
@@ -101,7 +105,7 @@ const OTPScreen = () => {
     } catch (err) {
       console.error("Verification error:", err);
       if (isClerkAPIResponseError(err)) {
-        Alert.alert("Error", err.errors[0].message);
+        setVerificationError(err.errors[0].message);
       }
     } finally {
       setLoading(false);
@@ -193,7 +197,10 @@ const OTPScreen = () => {
                 ref={ref}
                 {...props}
                 value={code}
-                onChangeText={setCode}
+                onChangeText={(text) => {
+                  setCode(text);
+                  setVerificationError(null);
+                }}
                 cellCount={CELL_COUNT}
                 rootStyle={styles.codeFieldRoot}
                 keyboardType="number-pad"
@@ -204,7 +211,12 @@ const OTPScreen = () => {
                   <View
                     onLayout={getCellOnLayoutHandler(index)}
                     key={index}
-                    style={[styles.cellRoot, isFocused && styles.focusCell]}
+                    style={[
+                      styles.cellRoot,
+                      isFocused && styles.focusCell,
+                      code.length === CELL_COUNT && styles.cellRootFilled,
+                      verificationError && styles.cellRootError,
+                    ]}
                   >
                     <Text style={styles.cellText}>
                       {symbol || (isFocused ? <Cursor /> : null)}
@@ -212,25 +224,35 @@ const OTPScreen = () => {
                   </View>
                 )}
               />
+
+              {verificationError && (
+                <Text style={styles.errorText}>
+                  {verificationError}. Please try again.
+                </Text>
+              )}
             </View>
           </View>
 
           <View className="flex-1 justify-center flex-row">
-            <Text className="text-[16px] font-[Lato-Medium] text-[#B2B3B3]">
-              Didn't receive the code?{" "}
-            </Text>
-            <TouchableOpacity
-              onPress={resendCode}
-              disabled={timer > 0 || isResending}
-            >
-              <Text className="text-[16px] font-[Lato-Medium] text-black">
-                {isResending
-                  ? "Resending..."
-                  : timer > 0
-                  ? `Resend in ${timer}s`
-                  : "Resend Code"}
-              </Text>
-            </TouchableOpacity>
+            {!verificationError && (
+              <>
+                <Text className="text-[16px] font-[Lato-Medium] text-[#B2B3B3]">
+                  Didn't receive the code?{" "}
+                </Text>
+                <TouchableOpacity
+                  onPress={resendCode}
+                  disabled={timer > 0 || isResending}
+                >
+                  <Text className="text-[16px] font-[Lato-Medium] text-black">
+                    {isResending
+                      ? "Resending..."
+                      : timer > 0
+                      ? `Resend in ${timer}s`
+                      : "Resend Code"}
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </View>
       </SafeAreaView>
@@ -275,5 +297,18 @@ const styles = StyleSheet.create({
   focusCell: {
     borderColor: "#000",
     borderWidth: 1,
+  },
+  errorText: {
+    color: "#EB3E48",
+    textAlign: "center",
+    marginTop: 8,
+    fontFamily: "Lato-Regular",
+    fontSize: 16,
+  },
+  cellRootError: {
+    borderColor: "#EB3E48",
+  },
+  cellRootFilled: {
+    borderColor: "#000",
   },
 });

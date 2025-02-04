@@ -58,7 +58,7 @@ const SignInScreen = () => {
   const onSubmit = async () => {
     try {
       setIsLoading(true);
-      const fullPhoneNumber = phone?.number!;
+      const fullPhoneNumber = `+${country.callingCode}${phoneNumber}`;
       console.log("🚀 ~ onSubmit ~ data:", fullPhoneNumber);
 
       // First try to sign in
@@ -71,7 +71,8 @@ const SignInScreen = () => {
           phoneNumber: fullPhoneNumber,
         });
 
-        signUp!.preparePhoneNumberVerification();
+        const response = signUp!.preparePhoneNumberVerification();
+        console.log("🚀 ~ onSubmit ~ response:", response);
 
         router.push({
           pathname: "/(auth)/otp",
@@ -130,8 +131,9 @@ const SignInScreen = () => {
         strategy: "phone_code",
         phoneNumberId,
       });
+      console.log("🚀 ~ trySignIn ~ signInResponse:", signInResponse);
 
-      router.replace({
+      router.push({
         pathname: "/(auth)/otp",
         params: {
           phoneNumber: fullPhoneNumber,
