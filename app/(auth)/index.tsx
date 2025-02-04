@@ -15,15 +15,12 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import CountryFlag from "react-native-country-flag";
-import CountryPicker, {
-  Country,
-  CountryCode,
-} from "react-native-country-picker-modal";
-import parsePhoneNumber, {
-  parsePhoneNumberFromString,
-} from "libphonenumber-js";
+import CountryPicker, { Country } from "react-native-country-picker-modal";
+import parsePhoneNumber from "libphonenumber-js";
 import { useSignIn, useSignUp } from "@clerk/clerk-expo";
 import { useForm, Controller } from "react-hook-form";
+import { TickCircle } from "iconsax-react-native";
+import Animated, { SlideInRight, SlideOutRight } from "react-native-reanimated";
 
 type FormData = {
   phoneNumber: string;
@@ -222,14 +219,33 @@ const SignInScreen = () => {
                       control={control}
                       name="phoneNumber"
                       render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                          placeholder="Phone Number"
-                          value={value}
-                          onChangeText={onChange}
-                          keyboardType="phone-pad"
-                          className="flex-1 text-[16px] min-h-[40px] "
-                          onBlur={onBlur}
-                        />
+                        <View className="flex-1 flex-row items-center">
+                          <TextInput
+                            placeholder="Phone Number"
+                            value={value}
+                            onChangeText={(text) =>
+                              onChange(text.replace(/[^0-9]/g, ""))
+                            }
+                            keyboardType="numeric"
+                            enterKeyHint="done"
+                            maxLength={10}
+                            className="flex-1 text-[16px] min-h-[40px] "
+                            onBlur={onBlur}
+                          />
+
+                          {isNumberValid && (
+                            <Animated.View
+                              entering={SlideInRight}
+                              exiting={SlideOutRight}
+                            >
+                              <TickCircle
+                                size={24}
+                                color="#22C55E"
+                                // variant="Bold"
+                              />
+                            </Animated.View>
+                          )}
+                        </View>
                       )}
                       rules={{ required: true }}
                     />
