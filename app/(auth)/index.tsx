@@ -30,10 +30,18 @@ type FormData = {
 };
 
 const SignInScreen = () => {
-  const { isLoaded: isSignInLoaded, signIn, setActive } = useSignIn();
+  const { isLoaded: isSignInLoaded, signIn } = useSignIn();
   const { isLoaded: isSignUpLoaded, signUp } = useSignUp();
-  const [countryCode, setCountryCode] = useState<CountryCode>("GH"); // Default country code
-  const [callingCode, setCallingCode] = useState("+233"); // Default calling code
+
+  const [country, setCountry] = useState<Country>({
+    cca2: "GH",
+    callingCode: ["233"],
+    currency: ["GHS"],
+    name: "Ghana",
+    region: "Africa",
+    flag: "🇬🇭",
+    subregion: "Western Africa",
+  });
   const [openCountryPicker, setOpenCountryPicker] = useState(false);
   const [loading, setIsLoading] = useState(false);
   const {
@@ -43,25 +51,18 @@ const SignInScreen = () => {
     watch,
   } = useForm<FormData>();
   const phoneNumber = watch("phoneNumber");
-  const phone = parsePhoneNumber(`${callingCode}${phoneNumber}`);
+  const phone = parsePhoneNumber(`+${country.callingCode}${phoneNumber}`);
   const isNumberValid = phone?.isValid();
 
   const handleCountrySelect = (country: Country) => {
-    setCountryCode(country.cca2);
-    setCallingCode(`+${country.callingCode[0]}`);
+    setCountry(country);
   };
 
-  const onSubmit = async (data: { phoneNumber: string }) => {
+  const onSubmit = async () => {
     try {
       setIsLoading(true);
-      const fullPhoneNumber = `${callingCode}${data.phoneNumber}`;
+      const fullPhoneNumber = phone?.number!;
       console.log("🚀 ~ onSubmit ~ data:", fullPhoneNumber);
-      const parsedNumber = parsePhoneNumber(fullPhoneNumber);
-
-      // if (!parsedNumber?.isValid()) {
-      //   Alert.alert("Error", "Please enter a valid phone number");
-      //   return;
-      // }
 
       // First try to sign in
       try {
@@ -191,7 +192,7 @@ const SignInScreen = () => {
                       onPress={() => setOpenCountryPicker(!openCountryPicker)}
                     >
                       <CountryFlag
-                        isoCode={countryCode}
+                        isoCode={country.cca2}
                         size={25}
                         style={{
                           width: 25,
@@ -205,7 +206,7 @@ const SignInScreen = () => {
                         }}
                       >
                         <Text className="text-[Lato-Regular] text-[16px]">
-                          {callingCode}
+                          {country.callingCode}
                         </Text>
                       </View>
                     </TouchableOpacity>
@@ -268,7 +269,7 @@ const SignInScreen = () => {
           withFlag={true}
           withCallingCode={true}
           withFilter={true}
-          countryCode={countryCode}
+          countryCode={country.cca2}
           withEmoji={true}
           onSelect={handleCountrySelect}
           visible={openCountryPicker}
