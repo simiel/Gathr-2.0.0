@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -22,6 +22,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useLoadingModal } from "@/hooks/useLoadingModal";
+import { TickCircle } from "iconsax-react-native";
 
 interface user {
   firstName: string;
@@ -43,7 +44,10 @@ const ProfileSetup = () => {
     profileImage: string;
   }>();
   const [focusedField, setFocusedField] = useState("");
-  const { saveUserProfile } = useUserProfile();
+  const { saveUserProfile, isUsernameAvailable } = useUserProfile();
+  const [isUsernameTaken, setIsUsernameTaken] = useState<boolean | null>(null);
+  const usernameCheckTimeout = useRef<NodeJS.Timeout>();
+  const abortController = useRef<AbortController>();
   const { showLoading, hideLoading, LoadingModal } = useLoadingModal();
   const {
     control,
@@ -145,19 +149,33 @@ const ProfileSetup = () => {
     } finally {
       hideLoading();
     }
-
-    // router.replace({
-    //   pathname: "/(user-setup)/preview",
-    //   params: {
-    //     firstName: firstName,
-    //     lastName: lastName,
-    //     username: username,
-    //     profileImage: profileImage,
-    //   },
-    // });
   };
 
   const isFormValid = firstName?.trim() && lastName?.trim() && username?.trim();
+
+  const checkUsername = useCallback(
+    async (username: string) => {
+      if (!username) {
+        setIsUsernameTaken(null);
+        return;
+      }
+
+      try {
+        // Cancel previous request if any
+        if (abortController.current) {
+          abortController.current.abort();
+        }
+        abortController.current = new AbortController();
+
+        const isAvailable = await isUsernameAvailable(username);
+        setIsUsernameTaken(!isAvailable);
+      } catch (error: unknown) {
+        if (error instanceof Error && error.name === "AbortError") return;
+        console.error("Error checking username:", error);
+      }
+    },
+    [isUsernameAvailable]
+  );
 
   return (
     <>
@@ -317,30 +335,52 @@ const ProfileSetup = () => {
                               message:
                                 "Username must start with a letter and can only contain lowercase letters and numbers",
                             },
+                            validate: async () =>
+                              !isUsernameTaken || "Username is already taken",
                           }}
                           render={({ field: { onChange, onBlur, value } }) => (
                             // Last Name
-                            <TextInput
-                              placeholder="Username"
-                              value={value}
-                              // onChangeText={onChange}
-                              onChangeText={(text) =>
-                                onChange(
-                                  text?.replace(/\s+/g, "").toLowerCase()
-                                )
-                              } // Force lowercase
-                              style={{
-                                ...styles.inputBox,
-                                borderColor:
-                                  focusedField === "userName"
-                                    ? "black"
-                                    : "#E5E5E5",
-                              }}
-                              returnKeyLabel="Done"
-                              onFocus={() => setFocusedField("userName")}
-                              onBlur={() => setFocusedField("")}
-                              autoCapitalize="none"
-                            />
+                            <>
+                              <TextInput
+                                placeholder="Username"
+                                value={value}
+                                onChangeText={(text) => {
+                                  const formattedText = text
+                                    ?.replace(/\s+/g, "")
+                                    .toLowerCase();
+                                  onChange(formattedText);
+
+                                  // Clear previous timeout
+                                  if (usernameCheckTimeout.current) {
+                                    clearTimeout(usernameCheckTimeout.current);
+                                  }
+
+                                  // Debounce username check
+                                  usernameCheckTimeout.current = setTimeout(
+                                    () => {
+                                      checkUsername(formattedText);
+                                    },
+                                    500
+                                  );
+                                }}
+                                style={{
+                                  ...styles.inputBox,
+                                  borderColor:
+                                    focusedField === "userName"
+                                      ? "black"
+                                      : "#E5E5E5",
+                                }}
+                                returnKeyLabel="Done"
+                                onFocus={() => setFocusedField("userName")}
+                                onBlur={() => setFocusedField("")}
+                                autoCapitalize="none"
+                              />
+                              {value && isUsernameTaken === false && (
+                                <View className="absolute right-4 top-3.5">
+                                  <TickCircle size="24" color="#4CAF50" />
+                                </View>
+                              )}
+                            </>
                           )}
                         />
                         {errors.userName && (
