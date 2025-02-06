@@ -33,16 +33,12 @@ const Location: React.FC<LocationProps> = ({
   onBack,
   maxLocations = 5,
 }) => {
-  const [locations, setLocations] = useState<string[]>(
-    data.length > 0 ? data : [""]
-  );
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const locations = data.length > 0 ? data : [""];
 
-  // Add a new empty location when the last input is being typed in
   const handleLocationChange = (text: string, index: number) => {
     const newLocations = [...locations];
     newLocations[index] = text;
-    setLocations(newLocations);
 
     // If this is the last input and it's not empty, add a new empty input
     if (
@@ -50,8 +46,9 @@ const Location: React.FC<LocationProps> = ({
       text.trim() !== "" &&
       locations.length < maxLocations
     ) {
-      setLocations([...newLocations, ""]);
+      newLocations.push("");
     }
+    onUpdate(newLocations);
   };
 
   const removeLocation = (index: number) => {
@@ -65,7 +62,7 @@ const Location: React.FC<LocationProps> = ({
     if (newLocations.length === 0) {
       newLocations.push("");
     }
-    setLocations(newLocations);
+    onUpdate(newLocations);
   };
 
   const handleNext = () => {
@@ -77,9 +74,8 @@ const Location: React.FC<LocationProps> = ({
       return;
     }
 
-    if (onUpdate(filteredLocations)) {
-      onNext();
-    }
+    onUpdate(filteredLocations);
+    onNext();
   };
 
   return (

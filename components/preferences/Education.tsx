@@ -5,11 +5,10 @@ import {
   GHANA_UNIVERSITIES,
   GHANA_SECONDARY_SCHOOLS,
 } from "@/hooks/useOnboardingForm";
-import { ArrowLeft } from "iconsax-react-native";
 
 interface EducationProps {
   data?: {
-    secondarySchool: string;
+    secondary_school: string;
     university?: string;
   };
   errors: Record<string, string>;
@@ -35,14 +34,14 @@ const Education: React.FC<EducationProps> = ({
   onNext,
   onBack,
 }) => {
-  const [school, setSchool] = useState(data?.secondarySchool || "");
+  const [school, setSchool] = useState(data?.secondary_school || "");
   const [university, setUniversity] = useState(data?.university || "");
   const [openField, setOpenField] = useState<"school" | "university" | "">("");
 
   const handleNext = () => {
     if (
       onUpdate({
-        secondarySchool: school,
+        secondary_school: school,
         university,
       })
     ) {
@@ -66,7 +65,7 @@ const Education: React.FC<EducationProps> = ({
           placeholder="Select Secondary School"
           dropDownDirection="TOP"
           style={{
-            borderColor: errors.secondarySchool
+            borderColor: errors.secondary_school
               ? "#EF4444"
               : openField == "school"
               ? "black"

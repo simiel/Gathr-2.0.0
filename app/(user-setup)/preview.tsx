@@ -1,6 +1,13 @@
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useRef, useCallback, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  Alert,
+} from "react-native";
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
@@ -15,12 +22,16 @@ import Education from "@/components/preferences/Education";
 import Faith from "@/components/preferences/Faith";
 import Industry from "@/components/preferences/Industry";
 import Location from "@/components/preferences/Location";
+import { useLoadingModal } from "@/hooks/useLoadingModal";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 // Import step components
 
 const WelcomeScreen = () => {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const { LoadingModal, hideLoading, showLoading } = useLoadingModal();
+  const { saveUserPreferences } = useUserProfile();
 
   const {
     currentStep,
@@ -60,14 +71,29 @@ const WelcomeScreen = () => {
   };
 
   const submit = async () => {
-    const isFormValid = await submitForm();
-    if (isFormValid) {
-      // Navigate to the next screen
-      console.log("submit");
-      router.replace({
-        pathname: "/(main)",
-        params: {},
-      });
+    try {
+      console.log(formData);
+      const isFormValid = await submitForm();
+      if (isFormValid) {
+        showLoading();
+        // Save preferences to Firestore
+        await saveUserPreferences({
+          education: formData.education,
+          faith: formData.faith,
+          industry: formData.industry,
+          locations: formData.locations,
+        });
+
+        router.replace({
+          pathname: "/(main)",
+          params: {},
+        });
+      }
+    } catch (error) {
+      console.error("Error saving preferences:", error);
+      Alert.alert("Error", "Failed to save preferences. Please try again.");
+    } finally {
+      hideLoading();
     }
   };
 
@@ -181,81 +207,84 @@ const WelcomeScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white p-8">
-      <View className="flex-1">
-        <LottieView
-          source={require("@/assets/animation/confetti.json")}
-          autoPlay
-          loop={true}
-          style={{ width: "100%", height: "100%", position: "absolute" }}
-        />
-        {/* User Preview Content */}
-        <View className="items-center flex-1 justify-center">
-          <View className="">
-            {!params.profileImage ? (
-              <View className="w-[160px] h-[160px] rounded-full mb-[32px] items-center justify-center bg-[#f5f5f5]">
-                <User size={100} variant="Bold" color="#0D0D0E" />
-              </View>
-            ) : (
-              <Image
-                source={{
-                  uri: `data:image/jpeg;base64, ${params.profileImage}`,
-                }}
-                style={{
-                  width: 160,
-                  height: 160,
-                  borderRadius: 200,
-                  marginBottom: 32,
-                  backgroundColor: "#F5F5F5",
-                }}
-              />
-            )}
+    <>
+      <SafeAreaView className="flex-1 bg-white p-8">
+        <View className="flex-1">
+          <LottieView
+            source={require("@/assets/animation/confetti.json")}
+            autoPlay
+            loop={true}
+            style={{ width: "100%", height: "100%", position: "absolute" }}
+          />
+          {/* User Preview Content */}
+          <View className="items-center flex-1 justify-center">
+            <View className="">
+              {!params.profileImage ? (
+                <View className="w-[160px] h-[160px] rounded-full mb-[32px] items-center justify-center bg-[#f5f5f5]">
+                  <User size={100} variant="Bold" color="#0D0D0E" />
+                </View>
+              ) : (
+                <Image
+                  source={{
+                    uri: `data:image/jpeg;base64, ${params.profileImage}`,
+                  }}
+                  style={{
+                    width: 160,
+                    height: 160,
+                    borderRadius: 200,
+                    marginBottom: 32,
+                    backgroundColor: "#F5F5F5",
+                  }}
+                />
+              )}
+            </View>
+
+            <View>
+              <Text className="text-[24px] font-[Lato-Black] text-center mb-[8px]">
+                Welcome to gathr,
+              </Text>
+              <Text className="text-[24px] text-[#B08D57] font-[Lato-Black] text-center mb-[8px]">
+                @{params.username}
+              </Text>
+            </View>
           </View>
 
-          <View>
-            <Text className="text-[24px] font-[Lato-Black] text-center mb-[8px]">
-              Welcome to gathr,
-            </Text>
-            <Text className="text-[24px] text-[#B08D57] font-[Lato-Black] text-center mb-[8px]">
-              @{params.username}
-            </Text>
-          </View>
+          <TouchableOpacity
+            onPress={handleStartOnboarding}
+            className="bg-black rounded-full py-6 px-6 items-center"
+          >
+            <Text className="text-white font-semibold">Okay</Text>
+          </TouchableOpacity>
         </View>
+        {/* </ScrollView> */}
 
-        <TouchableOpacity
-          onPress={handleStartOnboarding}
-          className="bg-black rounded-full py-6 px-6 items-center"
-        >
-          <Text className="text-white font-semibold">Okay</Text>
-        </TouchableOpacity>
-      </View>
-      {/* </ScrollView> */}
-
-      {showOnboarding && (
-        <BottomSheet
-          ref={bottomSheetRef}
-          enableDynamicSizing
-          backdropComponent={renderBackdrop}
-          enablePanDownToClose={false}
-          keyboardBlurBehavior="restore"
-          android_keyboardInputMode="adjustResize"
-        >
-          {/* <KeyboardAwareScrollView
+        {showOnboarding && (
+          <BottomSheet
+            ref={bottomSheetRef}
+            enableDynamicSizing
+            backdropComponent={renderBackdrop}
+            enablePanDownToClose={false}
+            keyboardBlurBehavior="restore"
+            android_keyboardInputMode="adjustResize"
+          >
+            {/* <KeyboardAwareScrollView
             enableOnAndroid
             enableAutomaticScroll
             extraScrollHeight={20}
             className="flex-1"
           > */}
-          <BottomSheetScrollView
-            className="flex-1 px-4"
-            showsVerticalScrollIndicator={false}
-          >
-            {renderStepContent()}
-          </BottomSheetScrollView>
-          {/* </KeyboardAwareScrollView> */}
-        </BottomSheet>
-      )}
-    </SafeAreaView>
+            <BottomSheetScrollView
+              className="flex-1 px-4"
+              showsVerticalScrollIndicator={false}
+            >
+              {renderStepContent()}
+            </BottomSheetScrollView>
+            {/* </KeyboardAwareScrollView> */}
+          </BottomSheet>
+        )}
+      </SafeAreaView>
+      <LoadingModal />
+    </>
   );
 };
 

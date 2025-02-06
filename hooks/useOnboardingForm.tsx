@@ -79,7 +79,7 @@ export const INDUSTRY_OPTIONS = [
 
 export const onboardingSchema = z.object({
   education: z.object({
-    secondarySchool: z.string().min(1, "Secondary school is required"),
+    secondary_school: z.string().min(1, "Secondary school is required"),
     university: z.string().optional(),
   }),
   faith: z.object({

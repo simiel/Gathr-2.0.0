@@ -116,7 +116,6 @@ const ProfileSetup = () => {
   const profileImage = watch("profileImage");
 
   const submitHandler = async (data: any) => {
-    console.log("🚀 ~ handleSubmitForm ~ data:", data);
     try {
       showLoading();
       const userData = {
