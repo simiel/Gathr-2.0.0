@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { requestPermissions } from "@/utils/permissions";
 
 interface BootstrapState {
   isLoaded: boolean;
@@ -24,10 +25,6 @@ export function useAppBootstrap(assets: BootstrapAssets) {
   // Font loading
   const [fontsLoaded] = useFonts(assets.fonts || {});
 
-  // Add more loading states as needed
-  // const [imagesLoaded] = useLoadImages(assets.images);
-  //   const [dbLoaded] = useInitializeDB(assets.database);
-
   useEffect(() => {
     async function prepare() {
       try {
@@ -36,16 +33,12 @@ export function useAppBootstrap(assets: BootstrapAssets) {
 
         // Add any async initialization here
         await initializeAsyncStorage();
-        // await initializeDatabase();
-        // await preloadImages();
-        // etc...
+        await requestPermissions();
 
-        // Set loaded state when everything is ready
-        // add 3 second delay
         setTimeout(() => {
           setState({ isLoaded: true, error: null });
           SplashScreen.hideAsync();
-        }, 3000);
+        }, 1000);
       } catch (error) {
         setState({ isLoaded: false, error: error as Error });
       }

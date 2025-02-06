@@ -48,7 +48,7 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const { isLoaded, isSignedIn, signOut } = useAuth();
+  const { isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
@@ -76,7 +76,7 @@ function RootLayoutNav() {
         } else {
           // User is authenticated - redirect to main app
           // router.replace("/(main)");
-          router.replace("/(user-setup)/preview");
+          router.replace("/(user-setup)");
         }
       } catch (error) {
         console.error("Error in auth routing:", error);

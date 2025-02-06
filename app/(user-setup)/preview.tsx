@@ -198,7 +198,9 @@ const WelcomeScreen = () => {
               </View>
             ) : (
               <Image
-                source={{ uri: params.profileImage }}
+                source={{
+                  uri: `data:image/jpeg;base64, ${params.profileImage}`,
+                }}
                 style={{
                   width: 160,
                   height: 160,

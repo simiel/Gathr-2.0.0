@@ -23,6 +23,9 @@ import {
   useSignUp,
   useAuth,
 } from "@clerk/clerk-expo";
+import { signInWithCustomToken } from "firebase/auth";
+import { auth } from "@/config/firebase";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 const CELL_COUNT = 6;
 const RESEND_COOLDOWN = 30;
@@ -47,6 +50,7 @@ const OTPScreen = () => {
   const [verificationError, setVerificationError] = useState<string | null>(
     null
   );
+  const { getUserProfile } = useUserProfile();
 
   const ref = useBlurOnFulfill({ value: code, cellCount: CELL_COUNT });
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
@@ -83,12 +87,15 @@ const OTPScreen = () => {
   };
 
   const signIntoFirebase = async () => {
-    const token = await getToken({ template: "integration_firebase" });
-
-    // const userCredentials = await signInWithCustomToken(auth, token || '')
-    // The userCredentials.user object can call the methods of
-    // the Firebase platform as an authenticated user.
-    // console.log('User:', userCredentials.user)
+    try {
+      const token = await getToken({ template: "integration_firebase" });
+      if (token) {
+        await signInWithCustomToken(auth, token);
+      }
+    } catch (error) {
+      console.error("Firebase auth error:", error);
+      throw error;
+    }
   };
 
   const handleVerification = async () => {
@@ -113,15 +120,19 @@ const OTPScreen = () => {
   };
 
   const verifyCode = async () => {
-    const result = await signUp!.attemptPhoneNumberVerification({ code });
-    console.log(
-      "🚀 ~ verifyCode ~ signUpVerificarionResponse:",
-      result.status,
-      result.requiredFields,
-      result.missingFields
-    );
+    await signUp!.attemptPhoneNumberVerification({ code });
     await setActive!({ session: signUp!.createdSessionId });
-    router.replace("/(user-setup)");
+    await signIntoFirebase();
+    const profile = await getUserProfile();
+    router.replace({
+      pathname: "/(user-setup)",
+      params: {
+        firstName: profile?.firstName || undefined,
+        lastName: profile?.lastName || undefined,
+        userName: profile?.username || undefined,
+        picture: profile?.profileImage || undefined,
+      },
+    });
   };
 
   const veryifySignIn = async () => {
@@ -130,7 +141,17 @@ const OTPScreen = () => {
       code,
     });
     await setActive!({ session: signIn!.createdSessionId });
-    router.replace("/(user-setup)");
+    await signIntoFirebase();
+    const profile = await getUserProfile();
+    router.replace({
+      pathname: "/(user-setup)",
+      params: {
+        firstName: profile?.firstName || undefined,
+        lastName: profile?.lastName || undefined,
+        userName: profile?.username || undefined,
+        picture: profile?.profileImage || undefined,
+      },
+    });
   };
 
   const resendCode = async () => {
